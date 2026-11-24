@@ -17,7 +17,7 @@
 | --- | --- |
 | 패치 적용·사전 검사 | Python 3.10 이상, Git, LZ4, DTC 1.7.2. 전체 소스 모드는 `tarfile.data_filter`를 제공하는 업데이트된 Python 필요. |
 | Android 이미지 재생성 | Linux, e2fsprogs의 `debugfs`와 `e2fsck`, AOSP `fec`, `avbtool.py`, OpenSSL, `secilc`, LZ4, 일치하는 정책 입력 및 모듈 |
-| U-Boot 전체 체인 | TI 부트로더 checkout과 TI 공식 빌드 요구 사항을 갖춘 x86_64 Linux. TI의 기본 13.3.rel1 교차 툴체인은 첫 빌드에서 다운로드할 수 있습니다. |
+| U-Boot 전체 체인 | TI 부트로더 checkout과 Linux. x86_64의 기본 경로는 TI 13.3.rel1 도구를 사용하고, `--native-toolchains`는 호스트의 `arm-linux-gnueabihf-` 및 `aarch64-linux-gnu-` 도구를 임시 빌드 사본에 연결합니다. |
 | 패널 모듈 | Linux, 실제 SDK의 커널 설정·심벌·헤더, Android Clang r536225과 LLVM 도구, AArch64 GCC 도구, 호스트 컴파일러 |
 | SD/eMMC 설치 | Linux의 `findmnt`, `lsblk`, `blockdev`, 또는 Android `fastboot`. UART·ADB 검증에는 UART 터미널과 `adb`가 필요합니다. |
 

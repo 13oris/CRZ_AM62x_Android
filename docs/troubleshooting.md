@@ -10,6 +10,7 @@
 | SD로만 부팅됨 | SW1, SD 분리, UART의 두 SPL, eMMC boot0 및 EXT_CSD를 확인합니다. eMMC 사용자 영역과 boot0를 구분합니다. |
 | `enablefilecrypto_failed` | 기존 보드에서 복호화된 F2FS의 encrypt 기능 플래그 누락이 원인이었습니다. raw 암호화 userdata에 평문 파일시스템 복구 명령을 실행하면 손상이 발생할 수 있습니다. UART와 백업을 먼저 확보합니다. |
 | 홈 아이콘이 비어 있음 | 기존 시험에서 설정 화면을 열고 홈으로 복귀하면 표시가 돌아왔습니다. 간헐 재현이 남아 있고 영구 수정은 미확인입니다. |
+| zram 크기 확인에서 권한 거부 | SELinux Enforcing 상태에서는 일반 셸이 zram sysfs를 읽지 못할 수 있습니다. CRZ userdebug에서는 UART의 `su 0 cat /sys/block/zram0/disksize`를 사용하거나 ADB 검증에 `--with-su`를 추가합니다. |
 | 터치 또는 깨우기 문제 | 현재 동작 검증은 17 ms 폴링입니다. GPIO IRQ 경로와 깊은 절전·터치 깨우기는 미검증입니다. |
 | 오디오 재생·녹음이 안 됨 | 무음 stub과 오디오 정책 초기화 여부, USB 장치 열거, 실제 USB 마이크 녹음을 각각 확인합니다. 아날로그 WM8960은 미해결입니다. |
 

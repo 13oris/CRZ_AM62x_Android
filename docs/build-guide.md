@@ -24,7 +24,9 @@
   --ti-bootloader-root "$TI_BOOTLOADER_ROOT" --output "$CRZ_UBOOT_OUT"
 ```
 
-이 명령은 TI bootloader manifest에서 `build`, 펌웨어, TF-A, OP-TEE와 TA 프로젝트의 SHA를 확인하고 별도 빌드 사본을 준비합니다. TI의 `build/build_all.sh --config=build/config/boards/am62x-sk.yaml`이 CRZ 패치가 반영된 A53/R5 defconfig를 사용합니다. GP `tiboot3.bin`, `tispl.bin`, `u-boot.img`와 해시 비교 보고서를 출력합니다. TI 공식 빌드 경로를 적용한 새 전체 체인 빌드는 미검증입니다.
+이 명령은 TI bootloader manifest에서 `build`, 펌웨어, TF-A, OP-TEE와 TA 프로젝트의 SHA를 확인하고 별도 빌드 사본을 준비합니다. TI의 `build/build_all.sh --config=build/config/boards/am62x-sk.yaml`이 CRZ 패치가 반영된 A53/R5 defconfig를 사용합니다. GP `tiboot3.bin`, `tispl.bin`, `u-boot.img`와 해시 비교 보고서를 출력합니다.
+
+Ubuntu aarch64에서 실행할 때는 기존 GNU ARM 및 AArch64 교차 도구를 PATH에 두고 `--native-toolchains`를 추가합니다. GCC 11.4.0, TI 기준 프로젝트 7개와 TI 빌드 의존성을 사용해 전체 체인 빌드를 검증했습니다. 출력은 기존 실기 배포본과 해시가 달라 SD 부팅에서 별도로 확인해야 합니다. [검증 결과와 산출물 해시](verification.md#부트로더)
 
 과거 작업 VM에서 저장된 CRZ A53 빌드 명령은 `make O=build-a53-android CROSS_COMPILE=aarch64-linux-gnu- -j4`이고, 해당 출력 디렉터리에 미리 준비된 Android `.config`가 있었습니다. 당시 R5 GP `tiboot3.bin`과 A53 `u-boot.img`는 릴리스와 일치합니다. 릴리스 `tispl.bin`은 별도로 보존한 당시 파일과 일치했으며 현재 VM 빌드 출력과 다릅니다. [TI AM62x 부트로더 빌드](https://software-dl.ti.com/processor-sdk-android/esd/AM62X/11_00_01/docs/android/Foundational_Components_Bootloaders.html)
 

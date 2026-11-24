@@ -13,6 +13,24 @@ from .module_abi import kernel_exports, verify_module_abi
 from .prepare import PANEL, PWM, archive_project
 
 
+def stage_native_toolchains(directory):
+    targets = {
+        "aarch64-none-linux-gnu": "aarch64-linux-gnu",
+        "arm-none-linux-gnueabihf": "arm-linux-gnueabihf",
+    }
+    for expected, native in targets.items():
+        bin_dir = directory / f"arm-gnu-toolchain-13.3.rel1-x86_64-{expected}" / "bin"
+        bin_dir.mkdir(parents=True)
+        for tool in ("as", "ar", "gcc", "ld", "nm", "objcopy", "objdump", "ranlib", "readelf", "strip"):
+            source = shutil.which(f"{native}-{tool}")
+            require(source, f"네이티브 교차 도구가 없습니다: {native}-{tool}")
+            (bin_dir / f"{expected}-{tool}").symlink_to(source)
+        for tool in ("cpp", "g++", "gcc-ar", "gcc-nm", "gcc-ranlib", "ld.bfd", "size", "strings"):
+            source = shutil.which(f"{native}-{tool}")
+            if source:
+                (bin_dir / f"{expected}-{tool}").symlink_to(source)
+
+
 def build_uboot(args):
     work = args.work_dir.resolve(strict=True)
     sdk = args.ti_bootloader_root.resolve(strict=True)
@@ -20,8 +38,8 @@ def build_uboot(args):
     ensure_separate(output, [work, sdk])
     state = verify_prepared(work)
     require("u-boot" in state.get("sources", []), "U-Boot 소스가 포함된 작업 디렉터리가 필요합니다.")
-    require(platform.system() == "Linux" and platform.machine() == "x86_64",
-            "TI 공식 부트로더 빌드의 기본 툴체인은 x86_64 Linux용입니다.")
+    require(platform.system() == "Linux" and (platform.machine() == "x86_64" or args.native_toolchains),
+            "TI 자동 다운로드 도구는 x86_64 Linux용입니다. Linux 네이티브 교차 도구는 --native-toolchains로 지정하세요.")
     require(hasattr(tarfile, "data_filter"), "tar data_filter를 지원하는 Python이 필요합니다.")
     revisions = MANIFEST["project_revisions"]["bootloader"]
     for name, revision in revisions.items():
@@ -36,6 +54,10 @@ def build_uboot(args):
                 archive_project(sdk / name, revision, kit / name)
         environment = os.environ.copy()
         environment.pop("SYSTEM_WIDE_TOOLCHAINS", None)
+        if args.native_toolchains:
+            toolchains = kit / "toolchains"
+            stage_native_toolchains(toolchains)
+            environment["SYSTEM_WIDE_TOOLCHAINS"] = str(toolchains)
         run("bash", "./build/build_all.sh", "--config=build/config/boards/am62x-sk.yaml",
             cwd=kit, env=environment)
         built = kit / "out/am62x-sk/release"
@@ -50,7 +72,9 @@ def build_uboot(args):
             actual[name] = sha256(stage / name)
         expected = MANIFEST["reference_release"]["bootloader_sha256"]
         write_json(stage / "build-report.json", {
+            "profile": "crz-am625-gp-uboot-ti-11.00.01",
             "recipe": "TI build_all.sh am62x-sk, CRZ patched U-Boot",
+            "toolchain": "native GNU cross compiler" if args.native_toolchains else "TI default",
             "sha256": actual,
             "matches_reference": {k: v == expected[k] for k, v in actual.items()},
         })

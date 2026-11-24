@@ -76,8 +76,18 @@ def flash_sd(args):
     source = args.binaries.resolve(strict=True)
     mount = args.mount.resolve(strict=True)
     require(mount.is_dir(), "정확한 SD 마운트 지점이 필요합니다.")
+    report = source / "build-report.json"
+    if report.is_file():
+        data = json.loads(report.read_text(encoding="utf-8"))
+        require(data.get("profile") == "crz-am625-gp-uboot-ti-11.00.01"
+                and set(data.get("sha256", {})) == set(BOOT0_LAYOUT),
+                "CRZ GP U-Boot 빌드 보고서가 필요합니다.")
+        expected = data["sha256"]
+        print("새로 빌드한 U-Boot 후보입니다. SD 부팅에서 먼저 확인하세요.")
+    else:
+        expected = MANIFEST["reference_release"]["bootloader_sha256"]
     for name in BOOT0_LAYOUT:
-        expect_hash(source / name, MANIFEST["reference_release"]["bootloader_sha256"][name])
+        expect_hash(source / name, expected[name])
     device = sd_target(mount)
     print(output("lsblk", "-o", "NAME,TYPE,SIZE,RM,TRAN,MODEL,MOUNTPOINTS", device))
     if not confirm(args, f"SD:{device}"):
@@ -93,10 +103,10 @@ def flash_sd(args):
                     shutil.copyfileobj(src, tmp)
                 tmp.flush()
                 os.fsync(tmp.fileno())
-                expect_hash(stage, MANIFEST["reference_release"]["bootloader_sha256"][name])
+                expect_hash(stage, expected[name])
                 require(sd_target(mount) == device, "쓰기 직전 SD 장치가 바뀌었습니다.")
                 stage.replace(target)
-                expect_hash(target, MANIFEST["reference_release"]["bootloader_sha256"][name])
+                expect_hash(target, expected[name])
             finally:
                 stage.unlink(missing_ok=True)
     run("sync")
@@ -238,7 +248,8 @@ def verify_adb(args):
     }
     failures = []
     for command, want in expected.items():
-        result = subprocess.run(["adb", "-s", serial, "shell", *command], text=True,
+        shell_command = ("su", "0", *command) if args.with_su and command[0] == "cat" else command
+        result = subprocess.run(["adb", "-s", serial, "shell", *shell_command], text=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         value = result.stdout.strip()
         passed = not result.returncode and value == want

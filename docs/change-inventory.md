@@ -26,5 +26,5 @@
 - U-Boot 13개 파일을 포함한 패치, 패널 패치, DTB 패치, vendor boot 헤더·ramdisk 목록 패치와 vendor 텍스트 패치를 각각 기준 파일에 적용했습니다. 적용 후 내용을 비교하고 역적용 사전 검사도 통과했습니다. U-Boot 패치는 원본 작업본의 공백까지 보존합니다.
 - DTC 1.7.2로 첫 번째 배포 DTB를 바이트 단위로 재생성했습니다. `boot_a`, `init_boot_a`, `dtbo_a`는 TI 순정 파일과 바이트가 같습니다.
 - 과거 보드 읽기 결과에서 SD 없는 eMMC 부팅, 1280×800 LCD, 터치·스크롤, SELinux Enforcing, FBE, 512 MiB zram, 오디오 정책 초기화를 확인했습니다.
-- Ubuntu VM에서 모듈 컴파일과 ABI 확인, 6개 Android 이미지 재생성과 ext4·AVB 확인을 완료했습니다. TI 기본 x86_64 경로의 새 U-Boot 전체 체인 빌드는 미검증입니다. 배포 `tispl.bin`은 당시 보존 파일과 일치합니다.
+- Ubuntu VM에서 모듈 컴파일과 ABI 확인, 6개 Android 이미지 재생성과 ext4·AVB 확인을 완료했습니다. GNU 교차 도구로 TI 전체 U-Boot 체인도 빌드했습니다. TI 기본 x86_64 도구 경로와 신규 산출물의 실기 부팅은 미검증입니다. [검증 결과](verification.md)
 - 빈 eMMC 전체 설치, USB 마이크 녹음, 터치 IRQ·deep suspend, 장기 안정성은 미검증입니다. 재부팅 뒤 홈 아이콘이 간헐적으로 비는 현상이 남아 있습니다. WM8960은 보드 시험에서 I2C 초기화에 실패했습니다.

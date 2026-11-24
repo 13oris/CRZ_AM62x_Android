@@ -46,6 +46,8 @@ U-Boot 및 패널 소스까지 적용하려면 `--images-only` 대신 소스 옵
 
 Ubuntu VM에서 순정 이미지와 기존 검증 모듈을 사용해 슬롯 A 이미지 6개를 재생성했습니다. ext4와 AVB 검증을 통과했으며 `vendor_boot_a`는 기존 배포본과 바이트 단위로 일치했습니다. 이 재생성 묶음의 보드 설치와 부팅은 미검증입니다.
 
+[재현성 검증 결과](docs/verification.md)에는 독립 빌드의 해시, U-Boot 교차 빌드, 현재 보드의 UART 읽기와 저장소 점검을 기록했습니다.
+
 ## 참고 자료
 
 - [TI Android 11.00.01 릴리스 노트](https://software-dl.ti.com/processor-sdk-android/esd/AM62X/11_00_01/docs/devices/AM62X/android/Release_Specific_Release_Notes.html)

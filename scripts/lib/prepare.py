@@ -42,12 +42,41 @@ def verify_repo_manifest(root):
         source_revision((root / path).resolve(), revision)
 
 
+def extract_members(source, target, members):
+    # Materialize regular files before creating any symlink. Ubuntu's backport
+    # of tarfile's data filter checks symlink targets from the archive root,
+    # whereas symlink target paths are relative to the containing directory.
+    links = []
+    target = target.resolve()
+    for member in members:
+        name = Path(member.name)
+        require(not name.is_absolute() and ".." not in name.parts,
+                f"아카이브 상대 경로 오류: {member.name}")
+        if member.issym():
+            link = target / name
+            destination = Path(member.linkname)
+            require(not destination.is_absolute() and (link.parent / destination).resolve().is_relative_to(target),
+                    f"아카이브 밖을 가리키는 심볼릭 링크: {name}")
+            links.append((link, member.linkname))
+        else:
+            require(member.isfile() or member.isdir(), f"지원하지 않는 아카이브 항목: {name}")
+            source.extract(member, target, filter="data")
+    for link, destination in links:
+        require(link.parent.resolve().is_relative_to(target) and
+                (link.parent / destination).resolve().is_relative_to(target),
+                f"아카이브 밖을 가리키는 심볼릭 링크: {link}")
+        link.parent.mkdir(parents=True, exist_ok=True)
+        link.symlink_to(destination)
+    for link, _ in links:
+        require(link.resolve().is_relative_to(target), f"아카이브 밖을 가리키는 심볼릭 링크: {link}")
+
+
 def archive_project(git_root, revision, target):
     target.mkdir(parents=True)
     with subprocess.Popen(["git", "-C", str(git_root), "archive", revision],
                           stdout=subprocess.PIPE) as proc:
         with tarfile.open(fileobj=proc.stdout, mode="r|") as source:
-            source.extractall(target, filter="data")
+            extract_members(source, target, source)
         require(proc.wait() == 0, f"Git 아카이브를 읽지 못했습니다: {git_root}")
 
 
@@ -59,13 +88,16 @@ def archive_uboot(stage, git_root, archive, revision):
         tree.mkdir()
         with tarfile.open(archive, mode="r:*") as source:
             require(source.pax_headers.get("comment") == revision, "U-Boot 아카이브 커밋이 다릅니다.")
-            for member in source.getmembers():
-                path = Path(member.name)
-                require(path.parts[0] == "u-boot-2025.01" and ".." not in path.parts,
-                        "U-Boot 아카이브에서 예상 밖 경로를 찾았습니다.")
-                if len(path.parts) > 1:
-                    member.name = str(Path(*path.parts[1:]))
-                    source.extract(member, tree, filter="data")
+            def members():
+                for member in source.getmembers():
+                    path = Path(member.name)
+                    require(path.parts and path.parts[0] == "u-boot-2025.01" and ".." not in path.parts,
+                            "U-Boot 아카이브에서 예상 밖 경로를 찾았습니다.")
+                    if len(path.parts) > 1:
+                        member.name = str(Path(*path.parts[1:]))
+                        yield member
+
+            extract_members(source, tree, members())
     return patch(tree, ROOT / "patches/u-boot/0001-crz-am625-android-boot.patch")
 
 

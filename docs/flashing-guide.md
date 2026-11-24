@@ -13,7 +13,7 @@ lsblk -o NAME,SIZE,MODEL,TRAN,RM,FSTYPE,MOUNTPOINTS
 
 ## SD 부트로더
 
-기존 FAT 파티션을 Linux에 읽기·쓰기로 마운트하고, 검증된 부트로더 파일 3개가 있는 디렉터리를 지정합니다.
+기존 FAT 파티션을 Linux에 읽기·쓰기로 마운트하고, 검증된 릴리스의 부트로더 파일 3개가 있는 디렉터리를 지정합니다. 새 U-Boot를 시험하려면 `build.sh uboot`의 출력 디렉터리를 사용합니다. 설치 스크립트가 빌드 보고서의 해시를 확인하고 후보임을 표시합니다.
 
 ```sh
 ./scripts/flash.sh sd --binaries "$REFERENCE_UBOOT_DIR" --mount "$SD_FAT_MOUNT"
@@ -55,6 +55,6 @@ SD 복구 Linux를 실행 중인 CRZ 보드에서 4 MiB `/dev/mmcblkNboot0`을 �
 ## 부팅과 주변장치 검증
 
 1. SD를 분리한 뒤 SW1을 eMMC로 놓고 전원을 켭니다. UART에서 CRZ 보드와 GP SoC, 1 GiB, U-Boot 2025.01, Android 커널 및 정상 부팅 로그를 확인합니다.
-2. 저장된 UART 로그는 `./scripts/verify.sh uart --log "$UART_LOG"`로 검사할 수 있습니다. ADB 연결 후 `adb devices -l`로 serial을 확인하고 `./scripts/verify.sh adb --serial "$ADB_SERIAL"`을 실행합니다.
+2. 저장된 UART 로그는 `./scripts/verify.sh uart --log "$UART_LOG"`로 검사할 수 있습니다. ADB 연결 후 `adb devices -l`로 serial을 확인하고 `./scripts/verify.sh adb --serial "$ADB_SERIAL"`을 실행합니다. 일반 셸에서 zram 읽기가 거부된 userdebug 보드라면 `--with-su`로 해당 값만 읽을 수 있습니다.
 3. 기존 배포에서 `sys.boot_completed=1`, 슬롯 `_a`, Android 16, FBE, `getenforce`의 `Enforcing`, zram `536870912` 바이트를 확인했습니다.
 4. LCD 표시, 터치·스크롤, 3버튼 내비게이션, USB 수신기 열거, Ethernet 링크와 ping을 확인합니다. USB 마이크 실제 녹음과 장기 동작은 별도 시험이 필요합니다. 오디오 정책 초기화와 실제 녹음은 각각 확인합니다.

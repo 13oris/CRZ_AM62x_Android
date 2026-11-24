@@ -56,8 +56,13 @@ def update_vendor_ext4(original, work, inputs, size, stage):
     blocks, = le("I", data, 1024 + 4)
     block_size = 1024 << le("I", data, 1024 + 24)[0]
     require(blocks * block_size == size, "vendor ext4 크기가 기존 AVB 데이터 크기와 다릅니다.")
+    epoch, = le("I", data, 1024 + 48)  # ext4 superblock s_wtime
+    require(epoch > 0, "순정 vendor ext4에 유효한 쓰기 시간이 없습니다.")
+    ext4_env = os.environ | {
+        "LC_ALL": "C", "E2FSPROGS_FAKE_TIME": str(epoch), "SOURCE_DATE_EPOCH": str(epoch),
+    }
     write(fs, data)
-    run("e2fsck", "-fn", fs)
+    run("e2fsck", "-fn", fs, env=ext4_env)
     profile = MANIFEST["selinux_policy"]
     policy_inputs = []
     for path, digest in profile["inputs_sha256"].items():
@@ -72,7 +77,7 @@ def update_vendor_ext4(original, work, inputs, size, stage):
     def debug(command, modify=False):
         flags = ["-w"] if modify else []
         return run("debugfs", *flags, "-R", command, fs, cwd=stage, capture=True,
-                   env=os.environ | {"LC_ALL": "C"}).decode()
+                   env=ext4_env).decode()
 
     for i, name in enumerate((*VENDOR_SETTINGS, POLICY, STUB)):
         target = "/" + name
@@ -111,7 +116,7 @@ def update_vendor_ext4(original, work, inputs, size, stage):
                 read_owner and read_owner.groups() == (uid, gid) and
                 read_mode and (int(read_mode.group(1), 8) | 0o100000) == int(mode, 8),
                 f"vendor 파일 쓰기 후 읽기 검증 실패: {target}")
-    run("e2fsck", "-fn", fs)
+    run("e2fsck", "-fn", fs, env=ext4_env)
     changed = fs.read_bytes()
     require(len(changed) == size and changed[1116:1144] == data[1116:1144],
             "vendor ext4 크기, 기능 플래그 또는 UUID가 달라졌습니다.")
