@@ -1,0 +1,4 @@
+# Keep reviewed snapshot and diff bytes identical across Git checkouts.
+/original_files/** -text
+/changed_files/** -text
+/diffs/** -text

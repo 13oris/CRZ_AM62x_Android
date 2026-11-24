@@ -1,0 +1,11 @@
+--- a/u-boot/configs/am62x_evm_r5_defconfig
++++ b/u-boot/configs/am62x_evm_r5_defconfig
+@@ -14,7 +14,7 @@
+ CONFIG_ENV_SIZE=0x20000
+ CONFIG_DM_GPIO=y
+ CONFIG_SPL_DM_SPI=y
+-CONFIG_DEFAULT_DEVICE_TREE="k3-am625-r5-sk"
++CONFIG_DEFAULT_DEVICE_TREE="k3-am625-r5-crz"
+ CONFIG_DM_RESET=y
+ CONFIG_SPL_MMC=y
+ CONFIG_SPL_SERIAL=y

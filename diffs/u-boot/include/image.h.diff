@@ -1,0 +1,10 @@
+--- a/u-boot/include/image.h
++++ b/u-boot/include/image.h
+@@ -1972,6 +1972,7 @@
+  * Return: Android init boot image address
+  */
+ ulong get_ainit_bootimg_addr(void);
++void set_ainit_bootimg_addr(ulong addr);
+ 
+ /**
+  * get_avendor_bootimg_addr() - Get Android vendor boot image address

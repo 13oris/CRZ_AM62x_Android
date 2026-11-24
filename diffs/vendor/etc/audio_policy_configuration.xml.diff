@@ -1,0 +1,103 @@
+--- a/vendor/etc/audio_policy_configuration.xml
++++ b/vendor/etc/audio_policy_configuration.xml
+@@ -1,4 +1,4 @@
+-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
++<?xml version='1.0' encoding='UTF-8'?>
+ <!-- Copyright (C) 2015 The Android Open Source Project
+ 
+      Licensed under the Apache License, Version 2.0 (the "License");
+@@ -13,13 +13,10 @@
+      See the License for the specific language governing permissions and
+      limitations under the License.
+ -->
+-
+-<audioPolicyConfiguration version="7.0" xmlns:xi="http://www.w3.org/2001/XInclude">
++<audioPolicyConfiguration xmlns:xi="http://www.w3.org/2001/XInclude" version="7.0">
+     <!-- version section contains a “version” tag in the form “major.minor” e.g version=”1.0” -->
+-
+     <!-- Global configuration Declaration -->
+-    <globalConfiguration speaker_drc_enabled="true"/>
+-
++    <globalConfiguration speaker_drc_enabled="true" />
+     <!-- Modules section:
+         There is one section per audio HW module present on the platform.
+         Each module section will contains two mandatory tags for audio HAL “halVersion” and “name”.
+@@ -43,60 +40,38 @@
+     -->
+     <modules>
+         <!-- Primary Audio HAL -->
+-        <module name="primary" halVersion="3.0">
++        <!--CRZ has no available onboard codec. This is a silent virtual OUTPUT only; USB microphones remain real external inputs.-->
++        <module name="stub" halVersion="3.0">
+             <attachedDevices>
+-                <item>Speaker</item>
+-                <item>Builtin Mic</item>
++                <item>CRZ Silent Output</item>
+             </attachedDevices>
+-            <defaultOutputDevice>Speaker</defaultOutputDevice>
++            <defaultOutputDevice>CRZ Silent Output</defaultOutputDevice>
+             <mixPorts>
+-                <mixPort name="primary output" role="source" flags="AUDIO_OUTPUT_FLAG_PRIMARY">
+-                    <profile format="AUDIO_FORMAT_PCM_32_BIT"
+-                             samplingRates="44100" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
+-                </mixPort>
+-                <mixPort name="primary input" role="sink">
+-                    <profile format="AUDIO_FORMAT_PCM_32_BIT"
+-                             samplingRates="44100" channelMasks="AUDIO_CHANNEL_IN_STEREO"/>
++                <mixPort name="crz silent primary" role="source" flags="AUDIO_OUTPUT_FLAG_PRIMARY">
++                    <profile format="AUDIO_FORMAT_PCM_16_BIT" samplingRates="48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO" />
+                 </mixPort>
+             </mixPorts>
+             <devicePorts>
+-                <!-- Output devices declaration, i.e. Sink DEVICE PORT -->
+-                <devicePort tagName="Speaker" type="AUDIO_DEVICE_OUT_SPEAKER" role="sink">
+-                    <profile format="AUDIO_FORMAT_PCM_32_BIT"
+-                             samplingRates="44100" channelMasks="AUDIO_CHANNEL_OUT_STEREO"/>
+-                </devicePort>
+-                <devicePort tagName="Builtin Mic" type="AUDIO_DEVICE_IN_BUILTIN_MIC" role="source">
+-                    <profile format="AUDIO_FORMAT_PCM_32_BIT"
+-                             samplingRates="44100" channelMasks="AUDIO_CHANNEL_IN_STEREO"/>
++                <devicePort tagName="CRZ Silent Output" type="AUDIO_DEVICE_OUT_BUS" address="crz-null" role="sink">
++                    <profile format="AUDIO_FORMAT_PCM_16_BIT" samplingRates="48000" channelMasks="AUDIO_CHANNEL_OUT_STEREO" />
+                 </devicePort>
+             </devicePorts>
+-            <!-- route declaration, i.e. list all available sources for a given sink -->
+             <routes>
+-                <route type="mix" sink="Speaker"
+-                       sources="primary output"/>
+-                <route type="mix" sink="primary input"
+-                       sources="Builtin Mic"/>
++                <route type="mix" sink="CRZ Silent Output" sources="crz silent primary" />
+             </routes>
+-
+         </module>
+-
++        <module name="primary" halVersion="3.0">
++            </module>
+         <!-- Usb Audio HAL -->
+-        <xi:include href="usb_audio_policy_configuration.xml"/>
+-
++        <xi:include href="usb_audio_policy_configuration.xml" />
+         <!-- Remote Submix Audio HAL -->
+-        <xi:include href="r_submix_audio_policy_configuration.xml"/>
+-
++        <xi:include href="r_submix_audio_policy_configuration.xml" />
+         <!-- Bluetooth Audio HAL -->
+-        <xi:include href="bluetooth_audio_policy_configuration.xml"/>
+-
++        <xi:include href="bluetooth_audio_policy_configuration.xml" />
+     </modules>
+     <!-- End of Modules section -->
+-
+     <!-- Volume section -->
+-
+-    <xi:include href="audio_policy_volumes.xml"/>
+-    <xi:include href="default_volume_tables.xml"/>
+-
++    <xi:include href="audio_policy_volumes.xml" />
++    <xi:include href="default_volume_tables.xml" />
+     <!-- End of Volume section -->
+-
+-</audioPolicyConfiguration>
++</audioPolicyConfiguration>
+\ No newline at end of file

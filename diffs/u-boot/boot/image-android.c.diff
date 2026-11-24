@@ -1,0 +1,209 @@
+--- a/u-boot/boot/image-android.c
++++ b/u-boot/boot/image-android.c
+@@ -60,32 +60,63 @@
+ /*
+  * Add a string of boot config parameters to memory appended by the trailer.
+  */
+-u32 add_bootconfig_parameters(char *params, ulong params_size,
+-			      ulong bootconfig_start_addr, u32 bootconfig_size)
+-{
+-	if (!params || !bootconfig_start_addr)
+-		return -1;
+-
+-	if (params_size == 0)
+-		return 0;
+-
+-	u32 applied_bytes = 0;
+-	u32 new_size = 0;
+-	ulong end = bootconfig_start_addr + bootconfig_size;
+-
+-	if (is_trailer_present(end)) {
+-		end -= BOOTCONFIG_TRAILER_SIZE;
+-		applied_bytes -= BOOTCONFIG_TRAILER_SIZE;
+-		memcpy(&new_size, (void *)end, BOOTCONFIG_SIZE_SIZE);
+-	} else {
+-		new_size = bootconfig_size;
+-	}
+-	memcpy((void *)end, params, params_size);
+-	applied_bytes += params_size;
+-	applied_bytes += add_trailer(bootconfig_start_addr,
+-				     bootconfig_size + applied_bytes);
+-	return applied_bytes;
+-}
++	u32 add_bootconfig_parameters(char *params, ulong params_size,
++	                              ulong bootconfig_start_addr, u32 bootconfig_size)
++	{
++	    ulong data_size;
++	    ulong new_data_size;
++	    ulong old_total_size;
++	    ulong new_total_size;
++	    ulong trailer_size;
++
++	    if (!params || !bootconfig_start_addr)
++	        return (u32)-1;
++
++	    if (!params_size)
++	        return 0;
++
++	    old_total_size = bootconfig_size;
++	    data_size = bootconfig_size;
++
++	    /*
++	     * If a trailer exists, exclude it from the data size.
++	     * The new parameters must be appended before the trailer.
++	     */
++	    if (bootconfig_size >= BOOTCONFIG_TRAILER_SIZE &&
++	        is_trailer_present(bootconfig_start_addr +
++	                           bootconfig_size)) {
++	        data_size -= BOOTCONFIG_TRAILER_SIZE;
++	    }
++
++	    /*
++	     * Check that the resulting total length fits in u32.
++	     * This function assumes the destination has sufficient RAM.
++	     */
++	    if (params_size > (u32)-1 - data_size -
++	                      BOOTCONFIG_TRAILER_SIZE)
++	        return (u32)-1;
++
++	    /*
++	     * Append the new bootconfig parameter after existing data.
++	     */
++	    memcpy((void *)(bootconfig_start_addr + data_size),
++	           params, params_size);
++
++	    new_data_size = data_size + params_size;
++
++	    /*
++	     * Rebuild the trailer with the correct size and checksum.
++	     */
++	    trailer_size = add_trailer(bootconfig_start_addr,
++	                               new_data_size);
++
++	    if (trailer_size != BOOTCONFIG_TRAILER_SIZE)
++	        return (u32)-1;
++
++	    new_total_size = new_data_size + trailer_size;
++
++	    return (u32)(new_total_size - old_total_size);
++	}
+ 
+ __weak ulong get_avendor_bootimg_addr(void)
+ {
+@@ -434,9 +465,9 @@
+ {
+ 	struct andr_image_data img_data = {0};
+ 	ulong ramdisk_ptr;
+-	size_t ret, len = 0;
++	size_t ret;
+ 	size_t bootconfig_size = 0;
+-	char *bootargs, *androidbootarg, *end;
++	char *bootargs, *androidbootarg;
+ 
+ 	if (!android_image_get_data(hdr, vendor_boot_img, &img_data))
+ 		return -EINVAL;
+@@ -452,14 +483,14 @@
+ 	 */
+ 	if (img_data.header_version > 2) {
+ 		/* Ramdisk can't be used in-place, copy it to ramdisk_addr_r */
+-		if (img_data.ramdisk_addr == ANDROID_IMAGE_DEFAULT_RAMDISK_ADDR) {
+-			ramdisk_ptr = env_get_ulong("ramdisk_addr_r", 16, 0);
+-			if (!ramdisk_ptr) {
+-				printf("Invalid ramdisk_addr_r to copy ramdisk into\n");
+-				return -EINVAL;
+-			}
+-		} else {
+-			ramdisk_ptr = img_data.ramdisk_addr;
++		/*
++		 * CRZ AM62x: always use the board-configured RAM address
++		 * for Android v3/v4 ramdisk placement.
++		 */
++		ramdisk_ptr = env_get_ulong("ramdisk_addr_r", 16, 0);
++		if (!ramdisk_ptr) {
++			printf("Invalid ramdisk_addr_r to copy ramdisk into\n");
++			return -EINVAL;
+ 		}
+ 		*rd_data = ramdisk_ptr;
+ 		memcpy((void *)(ramdisk_ptr), (void *)img_data.vendor_ramdisk_ptr,
+@@ -475,26 +506,61 @@
+ 
+ 			bootargs = env_get("bootargs");
+ 			bootconfig_size = img_data.bootconfig_size;
+-
+-			while (1) {
+-				androidbootarg = strstr(bootargs, "androidboot.");
+-				if (!androidbootarg)
+-					break;
+-				end = strchr(androidbootarg, ' ');
+-				*end = '\0';
+-				len = strlen(androidbootarg);
+-				*end = '\n'; // bootConfig are new-line terminated
+-				ret = add_bootconfig_parameters(androidbootarg, len + 1,
+-								ramdisk_ptr, bootconfig_size);
+-				if (!ret)
+-					return -EINVAL;
+-				bootconfig_size += ret;
+-				img_data.ramdisk_size += ret;
+-				/* Erase the androidboot.* bootarg from bootargs */
+-				*end = ' ';
+-				memmove(androidbootarg, androidbootarg + len,
+-					strlen(androidbootarg + len) + 1);
+-			}
++			
++			printf("CRZ DEBUG: bootargs before conversion: %s\n",
++      		 		bootargs ? bootargs : "(null)");
++
++			printf("CRZ DEBUG: initial bootconfig size: %zu\n",
++      				bootconfig_size);
++
++			printf("CRZ DEBUG: force_normal_boot present: %s\n",
++      				bootargs &&
++       				strstr(bootargs, "androidboot.force_normal_boot=1")
++       				? "YES" : "NO");
++			while (bootargs && *bootargs) {
++			    char *param;
++			    size_t token_len;
++			    size_t skip;
++
++			    androidbootarg = strstr(bootargs, "androidboot.");
++			    if (!androidbootarg)
++			        break;
++
++			    token_len = strcspn(androidbootarg, " \t");
++
++			    param = malloc(token_len + 2);
++			    if (!param)
++			        return -ENOMEM;
++
++			    memcpy(param, androidbootarg, token_len);
++			    param[token_len] = '\n';
++			    param[token_len + 1] = '\0';
++
++			    ret = add_bootconfig_parameters(param, token_len + 1,
++			                                    ramdisk_ptr, bootconfig_size);
++
++			    free(param);
++
++			    if (!ret || ret == (size_t)-1)
++			        return -EINVAL;
++
++			    bootconfig_size += ret;
++			    img_data.ramdisk_size += ret;
++
++			    skip = token_len;
++			    while (androidbootarg[skip] == ' ' ||
++			           androidbootarg[skip] == '\t')
++			        skip++;
++
++			    memmove(androidbootarg, androidbootarg + skip,
++			            strlen(androidbootarg + skip) + 1);
++}
++			
++			printf("CRZ DEBUG: final bootconfig size: %zu\n",
++       				bootconfig_size);
++
++			printf("CRZ DEBUG: remaining bootargs: %s\n",
++       				bootargs ? bootargs : "(null)");
+ 
+ 			/* Save back the new commandline without androidboot. */
+ 			env_set("bootargs", bootargs);

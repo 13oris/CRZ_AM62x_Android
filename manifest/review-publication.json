@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "review_catalog": "manifest/review-files.json",
+  "counts": {
+    "original_files": 14,
+    "changed_files": 21,
+    "diffs": 14
+  },
+  "files": [
+    {
+      "path": "kernel/crz-bsd101wx1-300.dtso",
+      "status": "reference",
+      "decision": "include",
+      "evidence": "기존 overlay와 바이트 일치. 파일의 이중 라이선스 고지를 보존한 설계 참고 자료.",
+      "license": "GPL-2.0-only OR MIT"
+    },
+    {
+      "path": "kernel/drivers/gpu/drm/panel/panel-simple.c",
+      "status": "modified",
+      "decision": "include",
+      "evidence": "양쪽 파일에 NVIDIA 2013 저작권 및 배포·수정 허용 고지 전문 보존.",
+      "license": "MIT-style"
+    },
+    {
+      "path": "u-boot/arch/arm/dts/Makefile",
+      "status": "modified",
+      "decision": "include",
+      "evidence": "파일 내 SPDX 및 해당 저작권 고지 보존.",
+      "license": "GPL-2.0+",
+      "source_links": [
+        "https://github.com/TexasInstruments/ti-u-boot/blob/ef2eb76b650415637bd93b0eddfb1e31489117f9/Licenses/README"
+      ]
+    },
+    {
+      "path": "u-boot/arch/arm/dts/k3-am62-crz-common-u-boot.dtsi",
+      "status": "added",
+      "decision": "include",
+      "evidence": "파일 내 SPDX 및 해당 저작권 고지 보존.",
+      "license": "GPL-2.0",
+      "source_links": [
+        "https://github.com/TexasInstruments/ti-u-boot/blob/ef2eb76b650415637bd93b0eddfb1e31489117f9/Licenses/README"
+      ]
+    },
+    {
+      "path": "u-boot/arch/arm/dts/k3-am625-crz-binman.dtsi",
+      "status": "added",
+      "decision": "include",
+      "evidence": "파일 내 SPDX 및 해당 저작권 고지 보존.",
+      "license": "GPL-2.0",
+      "source_links": [
+        "https://github.com/TexasInstruments/ti-u-boot/blob/ef2eb76b650415637bd93b0eddfb1e31489117f9/Licenses/README"
+      ]
+    },
+    {
+      "path": "u-boot/arch/arm/dts/k3-am625-crz-u-boot.dtsi",
+      "status": "added",
+      "decision": "include",
+      "evidence": "파일 내 SPDX 및 해당 저작권 고지 보존.",
+      "license": "GPL-2.0",
+      "source_links": [
+        "https://github.com/TexasInstruments/ti-u-boot/blob/ef2eb76b650415637bd93b0eddfb1e31489117f9/Licenses/README"
+      ]
+    },
+    {
+      "path": "u-boot/arch/arm/dts/k3-am625-r5-crz.dts",
+      "status": "added",
+      "decision": "include",
+      "evidence": "파일 내 SPDX 및 해당 저작권 고지 보존.",
+      "license": "GPL-2.0",
+      "source_links": [
+        "https://github.com/TexasInstruments/ti-u-boot/blob/ef2eb76b650415637bd93b0eddfb1e31489117f9/Licenses/README"
+      ]
+    },
+    {
+      "path": "u-boot/boot/bootmeth_android.c",
+      "status": "modified",
+      "decision": "include",
+      "evidence": "파일 내 SPDX 및 해당 저작권 고지 보존.",
+      "license": "GPL-2.0+",
+      "source_links": [
+        "https://github.com/TexasInstruments/ti-u-boot/blob/ef2eb76b650415637bd93b0eddfb1e31489117f9/Licenses/README"
+      ]
+    },
+    {
+      "path": "u-boot/boot/image-android.c",
+      "status": "modified",
+      "decision": "include",
+      "evidence": "파일 내 SPDX 및 해당 저작권 고지 보존.",
+      "license": "GPL-2.0+",
+      "source_links": [
+        "https://github.com/TexasInstruments/ti-u-boot/blob/ef2eb76b650415637bd93b0eddfb1e31489117f9/Licenses/README"
+      ]
+    },
+    {
+      "path": "u-boot/cmd/abootimg.c",
+      "status": "modified",
+      "decision": "include",
+      "evidence": "파일 내 SPDX 및 해당 저작권 고지 보존.",
+      "license": "GPL-2.0+",
+      "source_links": [
+        "https://github.com/TexasInstruments/ti-u-boot/blob/ef2eb76b650415637bd93b0eddfb1e31489117f9/Licenses/README"
+      ]
+    },
+    {
+      "path": "u-boot/configs/am62x_evm_a53_defconfig",
+      "status": "modified",
+      "decision": "include",
+      "evidence": "고정 TI U-Boot 프로젝트의 Licenses/README 기본 조건. 파일 개별 SPDX 없음.",
+      "license": "GPL-2.0",
+      "source_links": [
+        "https://github.com/TexasInstruments/ti-u-boot/blob/ef2eb76b650415637bd93b0eddfb1e31489117f9/Licenses/README"
+      ]
+    },
+    {
+      "path": "u-boot/configs/am62x_evm_r5_defconfig",
+      "status": "modified",
+      "decision": "include",
+      "evidence": "고정 TI U-Boot 프로젝트의 Licenses/README 기본 조건. 파일 개별 SPDX 없음.",
+      "license": "GPL-2.0",
+      "source_links": [
+        "https://github.com/TexasInstruments/ti-u-boot/blob/ef2eb76b650415637bd93b0eddfb1e31489117f9/Licenses/README"
+      ]
+    },
+    {
+      "path": "u-boot/dts/upstream/src/arm64/ti/k3-am625-crz.dts",
+      "status": "added",
+      "decision": "include",
+      "evidence": "파일 내 SPDX 및 해당 저작권 고지 보존.",
+      "license": "GPL-2.0-only OR MIT",
+      "source_links": [
+        "https://github.com/TexasInstruments/ti-u-boot/blob/ef2eb76b650415637bd93b0eddfb1e31489117f9/Licenses/README"
+      ]
+    },
+    {
+      "path": "u-boot/include/env/ti/android.env",
+      "status": "modified",
+      "decision": "include",
+      "evidence": "고정 TI U-Boot 프로젝트의 Licenses/README 기본 조건. 파일 개별 SPDX 없음.",
+      "license": "GPL-2.0",
+      "source_links": [
+        "https://github.com/TexasInstruments/ti-u-boot/blob/ef2eb76b650415637bd93b0eddfb1e31489117f9/Licenses/README"
+      ]
+    },
+    {
+      "path": "u-boot/include/image.h",
+      "status": "modified",
+      "decision": "include",
+      "evidence": "파일 내 SPDX 및 해당 저작권 고지 보존.",
+      "license": "GPL-2.0+",
+      "source_links": [
+        "https://github.com/TexasInstruments/ti-u-boot/blob/ef2eb76b650415637bd93b0eddfb1e31489117f9/Licenses/README"
+      ]
+    },
+    {
+      "path": "vendor-boot-header/cmdline.txt",
+      "status": "modified",
+      "decision": "include",
+      "evidence": "기술 설정값. 순정 인자는 TI Apache-2.0 보드 설정의 순서와 일치하며, 마지막 bootconfig 토큰은 커널의 표준 옵션입니다.",
+      "license": "Apache-2.0",
+      "source_links": [
+        "https://git.ti.com/cgit/android/device-ti-am62x/tree/am62x/BoardConfig.mk?id=3e9c6ded05b07e6ea91df6963b0cd59f2e5b0584",
+        "https://git.ti.com/cgit/android/device-ti-am62x/tree/BoardConfig-common.mk?id=3e9c6ded05b07e6ea91df6963b0cd59f2e5b0584",
+        "https://android.googlesource.com/platform/build/+/refs/tags/android-16.0.0_r2/core/Makefile",
+        "https://docs.kernel.org/admin-guide/bootconfig.html"
+      ]
+    },
+    {
+      "path": "vendor-boot-ramdisk/lib/modules/modules.dep",
+      "status": "modified",
+      "decision": "hold",
+      "evidence": "여러 모듈에서 생성한 의존성 목록입니다. 모듈별 출처와 추출 텍스트의 고지를 연결할 근거 미확인."
+    },
+    {
+      "path": "vendor-boot-ramdisk/lib/modules/modules.load",
+      "status": "modified",
+      "decision": "hold",
+      "evidence": "이미지 빌드에서 합성한 모듈 순서입니다. 모든 입력과 산출물의 라이선스 대응 미확인."
+    },
+    {
+      "path": "vendor-boot/crz-vendor-boot-dtb0.dts",
+      "status": "modified",
+      "decision": "hold",
+      "evidence": "DTC 디컴파일로 원래 DTS/DTSI의 파일 경계와 고지가 사라졌습니다. 포함 소스와 라이선스의 대응 미확인."
+    },
+    {
+      "path": "vendor/etc/audio_policy_configuration.xml",
+      "status": "modified",
+      "decision": "include",
+      "evidence": "양쪽 XML에 2015 Android Open Source Project Apache-2.0 고지 전문 보존.",
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "vendor/etc/fstab.am62.mmc",
+      "status": "modified",
+      "decision": "include",
+      "evidence": "TI Soong 패키지 Android-Apache-2.0 선언. 원본 추출 바이트는 해당 genrule의 템플릿 치환 결과와 일치.",
+      "license": "Apache-2.0",
+      "source_links": [
+        "https://git.ti.com/cgit/android/device-ti-am62x/tree/config/fstab/Android.bp?id=3e9c6ded05b07e6ea91df6963b0cd59f2e5b0584",
+        "https://git.ti.com/cgit/android/device-ti-am62x/tree/config/fstab/fstab.in?id=3e9c6ded05b07e6ea91df6963b0cd59f2e5b0584"
+      ]
+    },
+    {
+      "path": "vendor/etc/fstab.am62.mmc.avb",
+      "status": "modified",
+      "decision": "include",
+      "evidence": "TI Soong 패키지 Android-Apache-2.0 선언. 원본 추출 바이트는 해당 genrule의 템플릿 치환 결과와 일치.",
+      "license": "Apache-2.0",
+      "source_links": [
+        "https://git.ti.com/cgit/android/device-ti-am62x/tree/config/fstab/Android.bp?id=3e9c6ded05b07e6ea91df6963b0cd59f2e5b0584",
+        "https://git.ti.com/cgit/android/device-ti-am62x/tree/config/fstab/fstab.in.avb?id=3e9c6ded05b07e6ea91df6963b0cd59f2e5b0584"
+      ]
+    },
+    {
+      "path": "vendor/etc/selinux/vendor_sepolicy.cil",
+      "status": "modified",
+      "decision": "hold",
+      "evidence": "여러 소스 정책에서 생성한 CIL입니다. 생성 텍스트의 소스별 라이선스와 고지 대응 미확인."
+    },
+    {
+      "path": "vendor/etc/ueventd.rc",
+      "status": "modified",
+      "decision": "hold",
+      "evidence": "TI am62x/ueventd.am62x.rc와 바이트가 일치합니다. 해당 파일을 명시적으로 포괄하는 라이선스 또는 배포 고지 미확인.",
+      "source_links": [
+        "https://git.ti.com/cgit/android/device-ti-am62x/tree/am62x/ueventd.am62x.rc?id=3e9c6ded05b07e6ea91df6963b0cd59f2e5b0584"
+      ]
+    },
+    {
+      "path": "vendor/etc/usb_audio_policy_configuration.xml",
+      "status": "modified",
+      "decision": "include",
+      "evidence": "양쪽 XML에 2015 Android Open Source Project Apache-2.0 고지 전문 보존.",
+      "license": "Apache-2.0"
+    },
+    {
+      "path": "vendor/etc/vintf/manifest/crz-audio-stub.xml",
+      "status": "added",
+      "decision": "include",
+      "evidence": "기존 Private CRZ 저장소에서 배포한 overlay XML과 바이트 일치. 별도 공개 라이선스 지정 없음.",
+      "license": "CRZ project"
+    }
+  ]
+}

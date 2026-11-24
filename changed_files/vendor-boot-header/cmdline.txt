@@ -1,0 +1,1 @@
+cma=128M console=ttyS2,115200 printk.devkmsg=on init=/init firmware_class.path=/vendor/firmware mem_sleep_default=deep 8250.nr_uarts=10 bootconfig loglevel=8 ignore_loglevel

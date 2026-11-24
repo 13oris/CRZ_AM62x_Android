@@ -1,0 +1,14 @@
+--- a/u-boot/cmd/abootimg.c
++++ b/u-boot/cmd/abootimg.c
+@@ -30,6 +30,11 @@
+ ulong get_ainit_bootimg_addr(void)
+ {
+ 	return _ainit_bootimg_addr;
++}
++
++void set_ainit_bootimg_addr(ulong addr)
++{
++	_ainit_bootimg_addr = addr;
+ }
+ 
+ ulong get_avendor_bootimg_addr(void)

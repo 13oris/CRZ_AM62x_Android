@@ -10,25 +10,44 @@ CRZ AM625 GP 보드에서 TI Processor SDK Android **11.00.01**의 Android 16 eM
 | 실행 커널 | `6.12.23-android16-5-gaf4cb0e2168b-4k` |
 | U-Boot | 2025.01, TI `ef2eb76b650415637bd93b0eddfb1e31489117f9` 기반 |
 
+## TI에서 받은 기준 입력
+
+| 입력 | 사용한 내용 |
+| --- | --- |
+| TI U-Boot 2025.01 `ef2eb76` | A53/R5 defconfig와 CRZ DTS 및 Android 부팅 코드의 기준 소스 |
+| TI 커널 소스 `e9a61e5` | `panel-simple.c` 패치의 기준 소스 |
+| TI `AM62x_userdebug_11.00.01_emmc.tar` | 순정 `boot.img`의 `af4cb0e` 계열 Android 커널, `init_boot.img`, `vendor_boot.img`, `super.img` 등 |
+
+포팅은 TI 배포 이미지를 기준으로 진행했습니다. 전체 AOSP 빌드와 `lunch`는 사용하지 않았습니다. `e9a61e5`는 패널 소스 기준이고, `af4cb0e`는 `boot.img`로 이미 배포된 커널 기준입니다. 순정 커널을 유지하면서 CRZ LCD를 지원하기 위해 패널 모듈을 기존 커널의 ABI에 맞춰 별도로 빌드했습니다. [TI 입력과 해시](manifest/ti-11.00.01.json) · [재현 입력](docs/reproduction-inputs.md)
+
+`vendor_boot.img`에서 0번 DTB를 꺼내 DTC 1.7.2로 DTS를 생성하고, 헤더의 `vendor_cmdline`을 줄바꿈을 붙인 텍스트로 추출했습니다. vendor ramdisk CPIO에서 모듈 목록을, `super.img`의 ext4 `vendor_a`에서 설정을 추출했습니다. [추출 방식과 기준 이미지 해시](manifest/review-files.json)
+
 ## 변경 사항
 
-CRZ용 U-Boot A53/R5 설정과 Android 부팅 처리, LCD·터치 DTB, 백라이트 권한·SELinux, USB 오디오 정책과 512 MiB zram을 반영했습니다. 배포 커널은 TI의 순정 `boot.img`를 사용하며, LCD·터치·zram 모듈은 `vendor_boot` ramdisk에서 로드합니다. [파일별 변경 목록](docs/change-inventory.md)
+- **U-Boot 수정 8개, 신규 5개.** A53/R5 defconfig와 CRZ DTS로 보드 메모리와 부팅 구성을 반영했습니다. Android 헤더 v4의 `init_boot`에서 generic ramdisk를 읽고, 기존 vendor ramdisk와 bootconfig 인자·트레일러를 처리하도록 했습니다.
+- **커널·vendor boot.** 패널 설정과 LCD·터치 DTB를 적용했습니다. `vendor_boot`의 헤더 인자와 ramdisk 모듈 로드·의존성 목록을 조정했습니다.
+- **vendor.** 백라이트 권한과 SELinux, USB 오디오 정책, Audio HAL stub, zram 512 MiB를 반영했습니다. 현재 패치는 두 오디오 XML의 AOSP 저작권·Apache 2.0 고지를 보존합니다. 기존 보드 배포본과 XML의 요소와 속성은 일치하고, 주석을 포함한 파일 바이트 및 결과 `vendor_a`·`vbmeta_a` 해시는 다릅니다. [파일별 변경 목록](docs/change-inventory.md) · [기존 배포와 재생성 결과](docs/verification.md)
+
+## 원본·변경본·diff 보기
+
+[파일별 보기](docs/review-files.md)에서 같은 행의 링크로 원본 14개, 변경·추가·참고 파일 21개, 파일별 diff 14개를 직접 열 수 있습니다. 재배포 근거 확인을 보류한 5건과 순정 입력으로 전체 검토본을 생성하는 방법도 함께 기록했습니다.
 
 ## 저장소 구조
 
 | 경로 | 내용 |
 | --- | --- |
 | `manifest/` | TI 릴리스, 소스 SHA, 이미지·모듈·정책 해시 |
-| [`original_files/`](original_files/README.md) | 변경 기준이 되는 원본 파일의 출처와 로컬 생성 안내 |
-| [`changed_files/`](changed_files/README.md) | 적용 후 텍스트와 추가 파일의 검토용 구성 |
-| [`diffs/`](diffs/README.md) | 상대 경로가 대응하는 파일별 비교본 |
+| [`original_files/`](original_files/README.md) | TI 순정 기준 파일 전문 |
+| [`changed_files/`](changed_files/README.md) | CRZ 적용 후 파일 전문, 신규 파일과 설계 참고 DTS |
+| [`diffs/`](diffs/README.md) | 같은 상대 경로의 파일별 unified diff |
+| [`licenses/`](licenses/README.md) | 검토용 파일의 라이선스 전문과 변경 고지 |
 | `patches/` | U-Boot, 패널, vendor boot 구성 및 vendor 파일 패치 |
 | `overlay/` | 신규 VINTF 선언과 LCD·터치 설계용 DTS overlay |
 | `apply_change.sh` | 기준 확인, 사전 검사, 작업 사본에 패치 적용 |
 | `scripts/` | 빌드, SD/eMMC 대상 확인과 쓰기, 이미지·UART·ADB 검사 |
 | `docs/` | 환경, 준비, 빌드, 설치·검증 및 [포팅 참고 사항](docs/porting-notes.md) |
 
-[파일별 검토본 생성](docs/review-files.md)에서는 검증된 TI 입력에서 원본 19개, 변경·추가·참고 파일 26개, 파일별 diff 19개를 생성합니다. [검토 파일 인덱스](manifest/review-files.json)에 파일별 SHA-256과 출처가 있습니다.
+[파일별 검토본 생성](docs/review-files.md)에서는 고정된 TI 입력으로 원본 19개, 변경·추가·참고 파일 26개, 파일별 diff 19개를 생성합니다. [검토 파일 인덱스](manifest/review-files.json)에 파일별 SHA-256과 출처가 있습니다.
 
 ## 준비와 적용
 

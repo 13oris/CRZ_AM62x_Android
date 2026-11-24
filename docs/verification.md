@@ -51,3 +51,9 @@ TI의 `ef2eb76` Git 커밋을 깨끗한 디렉터리에 받아 CRZ 패치를 적
 - Git 객체 무결성과 스크립트 문법을 검사했습니다. 추적 파일은 패치·설정·스크립트·문서 텍스트입니다. 빌드 이미지, 펌웨어, 커널 모듈, SDK 원본 트리 및 키 파일은 추적하지 않습니다.
 - 추적 파일에서 PEM 개인 키 표기, 일반 토큰 형식, URL 내 인증정보, 개인 작업 경로를 검색했습니다. 일치 항목은 발견되지 않았습니다.
 - U-Boot DTS 추가분의 TI 저작권·SPDX와 오디오 XML의 AOSP Apache 2.0 고지를 보존했습니다. 공개 전에 CRZ 팀 자료 및 패치의 재배포 권한을 확인해야 합니다. [TI SDK 라이선스 안내](https://software-dl.ti.com/processor-sdk-android/esd/AM62X/11_00_01/docs/devices/AM62X/android/Release_Specific_Release_Notes.html) · [AOSP 라이선스 고지](https://source.android.com/docs/setup/contribute/licenses)
+
+## Git에 포함한 검토본
+
+- 윤철님의 Linux 저장소 `fdf1195`에서 원본 41개, 변경본 83개, 파일별 diff 33개를 확인했습니다. 적용 스크립트는 별도의 패치와 overlay를 사용합니다. Android도 같은 경로로 검토 파일을 제공하고 기존 적용 절차를 유지합니다. [Linux 기준 커밋](https://github.com/yoonchulroh/CRZ_AM62x_Linux/tree/fdf119554cb6485c70a18982274c2a107b8566a4)
+- 순정 TI 이미지와 고정 소스 아카이브에서 원본 19개, 변경·추가·참고 26개, diff 19개를 다시 만들었습니다. 저장소 인덱스 및 앞서 만든 로컬 검토본과 일치했습니다. TI 설정에서 재구성한 순정 헤더의 cmdline과 두 fstab도 배포 이미지 추출 텍스트와 바이트가 일치했습니다.
+- Git에 넣은 원본 14개, 변경·추가·참고 21개, diff 14개의 바이트와 SHA-256을 Git 객체에서도 확인했습니다. diff 14개를 각각 원본 사본에 적용한 결과가 대응 변경본과 일치했습니다. [검토 경로와 보류 5건](review-files.md)
