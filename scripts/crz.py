@@ -12,22 +12,27 @@ from xml.etree import ElementTree
 from lib.device import PARTITIONS, flash_boot0, flash_fastboot, flash_sd, verify_adb, verify_images, verify_uart
 from lib.image_build import build_boot0, build_images
 from lib.prepare import prepare
+from lib.review import export_review
 from lib.source_build import build_modules, build_uboot
 
 
-def prepare_parser():
-    p = argparse.ArgumentParser(prog="apply_change.sh", description="TI 11.00.01 입력을 확인하고 별도 작업 사본에 CRZ 변경을 적용합니다.")
+def ti_input_options(p):
     p.add_argument("android_root", type=Path, metavar="TI_IMAGE_DIR_OR_AOSP_ROOT")
     p.add_argument("--images", type=Path, help="AOSP 루트를 지정할 때 사용할 TI 순정 이미지 디렉터리")
-    p.add_argument("--work-dir", type=Path, help="패치 작업 사본을 저장할 새 디렉터리")
-    p.add_argument("--check", "--dry-run", action="store_true", help="임시 사본에서만 적용 검사")
-    p.add_argument("--images-only", action="store_true", help="Android 이미지 준비 항목만 적용")
     uboot = p.add_mutually_exclusive_group()
     uboot.add_argument("--uboot", type=Path, help="TI 기준 SHA의 U-Boot Git 루트")
     uboot.add_argument("--uboot-archive", type=Path, help="기준 TI U-Boot 소스 아카이브")
     kernel = p.add_mutually_exclusive_group()
     kernel.add_argument("--kernel", type=Path, help="e9a61e5 커널 Git 루트")
     kernel.add_argument("--kernel-archive", type=Path, help="기준 TI 커널 소스 아카이브")
+
+
+def prepare_parser():
+    p = argparse.ArgumentParser(prog="apply_change.sh", description="TI 11.00.01 입력을 확인하고 별도 작업 사본에 CRZ 변경을 적용합니다.")
+    ti_input_options(p)
+    p.add_argument("--work-dir", type=Path, help="패치 작업 사본을 저장할 새 디렉터리")
+    p.add_argument("--check", "--dry-run", action="store_true", help="임시 사본에서만 적용 검사")
+    p.add_argument("--images-only", action="store_true", help="Android 이미지 준비 항목만 적용")
     p.set_defaults(action=prepare)
     return p
 
@@ -35,6 +40,16 @@ def prepare_parser():
 def path_options(parser, *names):
     for name in names:
         parser.add_argument(f"--{name}", type=Path, required=True)
+
+
+def review_parser():
+    p = argparse.ArgumentParser(prog="scripts/export_review.sh",
+                                description="순정 입력과 실제 패치로 원본·변경본·diff 검토 트리를 생성합니다.")
+    ti_input_options(p)
+    path_options(p, "output")
+    p.add_argument("--refresh-catalog", action="store_true", help="변경 검토용 새 인덱스를 출력에 저장")
+    p.set_defaults(action=export_review)
+    return p
 
 
 def build_parser():
@@ -98,9 +113,10 @@ def verify_parser():
 
 
 def main():
-    parsers = {"prepare": prepare_parser, "build": build_parser, "flash": flash_parser, "verify": verify_parser}
+    parsers = {"prepare": prepare_parser, "review": review_parser, "build": build_parser,
+               "flash": flash_parser, "verify": verify_parser}
     if len(sys.argv) < 2 or sys.argv[1] not in parsers:
-        print("apply_change.sh 또는 scripts/{build,flash,verify}.sh를 사용하세요.", file=sys.stderr)
+        print("apply_change.sh 또는 scripts/{export_review,build,flash,verify}.sh를 사용하세요.", file=sys.stderr)
         return 2
     args = parsers[sys.argv[1]]().parse_args(sys.argv[2:])
     try:

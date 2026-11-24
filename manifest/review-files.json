@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "sdk": "TI Processor SDK Android AM62x 11.00.01",
+  "apply_inputs_sha256": "6ab0c0dcd2f30566973eb1a439a837326ca770c4fcdcd83fcd519ca23d31db1c",
+  "counts": {
+    "original_files": 19,
+    "changed_files": 26,
+    "diffs": 19,
+    "additions": 6,
+    "design_references": 1
+  },
+  "sources": {
+    "u-boot": {
+      "type": "git",
+      "project": "u-boot",
+      "revision": "ef2eb76b650415637bd93b0eddfb1e31489117f9"
+    },
+    "kernel": {
+      "type": "git",
+      "project": "ti-linux-kernel",
+      "revision": "e9a61e5d367622946887c99803812cd8e07b9c74"
+    },
+    "vendor-boot": {
+      "type": "decompiled-dtb",
+      "image": "vendor_boot.img",
+      "image_sha256": "be0c34b8ac2dbdda02e4c0cea041c1d84dd82a8334e5d5cfc55fb09c60b475e3",
+      "dtb_entry": 0,
+      "dtb_sha256": "be24843a07c56ee6491bada63c0c41d9a0ef408c9920543875d45b9554ccb613",
+      "dtc_version": "1.7.2"
+    },
+    "vendor-boot-header": {
+      "type": "extracted-header",
+      "image": "vendor_boot.img",
+      "image_sha256": "be0c34b8ac2dbdda02e4c0cea041c1d84dd82a8334e5d5cfc55fb09c60b475e3",
+      "field": "vendor_cmdline (LF-terminated text)"
+    },
+    "vendor-boot-ramdisk": {
+      "type": "extracted-cpio",
+      "image": "vendor_boot.img",
+      "image_sha256": "be0c34b8ac2dbdda02e4c0cea041c1d84dd82a8334e5d5cfc55fb09c60b475e3",
+      "entry": "vendor ramdisk"
+    },
+    "vendor": {
+      "type": "extracted-ext4",
+      "image": "super.img",
+      "image_sha256": "3b84dcb073521d81d9a065e844163c9adab6ddc769683b2f175ec477d8c98e19",
+      "partition": "vendor_a",
+      "partition_sha256": "ef4a87e89c6ff403fa1ade5c8635eaf87a43532b1949fa5cea7f15d770a32d25"
+    }
+  },
+  "files": [
+    {
+      "path": "kernel/crz-bsd101wx1-300.dtso",
+      "status": "reference",
+      "changed_sha256": "8bfffdc3305d1f3f7e5a5b869147fc49ea3cc4789677a78d19d7c56e53a410ab",
+      "application": "design-only",
+      "publication": "review-required"
+    },
+    {
+      "path": "kernel/drivers/gpu/drm/panel/panel-simple.c",
+      "status": "modified",
+      "changed_sha256": "bda74d942897bf9caa2cbb1c1c5da01cb028e1752db4bcb5a1ee39fc1736b877",
+      "application": "patches/kernel/0001-panel-simple-crz-bsd101wx1-300.patch",
+      "publication": "review-required",
+      "original_source": "kernel",
+      "original_sha256": "c4bd5620d0864f962d71eeab3a84a64f659583bd1fa2770e9181c41df96cf714",
+      "diff_sha256": "6d14c34019a04ec246d22e3f0d41fa7163678486ad6252ea9fefd94911775df7"
+    },
+    {
+      "path": "u-boot/arch/arm/dts/Makefile",
+      "status": "modified",
+      "changed_sha256": "b0ef2dae1e7c14380c6d38bd7e0e5819609d1d9bce1453fafb2f3e27af7f710b",
+      "application": "patches/u-boot/0001-crz-am625-android-boot.patch",
+      "publication": "review-required",
+      "original_source": "u-boot",
+      "original_sha256": "f9dd267d867a849c8e37f6155e1c4584a64330ebb9c7e7aebcc8f7bb95f07be6",
+      "diff_sha256": "c19f5d6511a59cdc683426b0ea6fb2319360c1ad50c4301110664ef716cfd435"
+    },
+    {
+      "path": "u-boot/arch/arm/dts/k3-am62-crz-common-u-boot.dtsi",
+      "status": "added",
+      "changed_sha256": "16d91cc87aa499709c6365a8c063d9dbf3f05eba564f3f833fd456eaecfd0664",
+      "application": "patches/u-boot/0001-crz-am625-android-boot.patch",
+      "publication": "review-required"
+    },
+    {
+      "path": "u-boot/arch/arm/dts/k3-am625-crz-binman.dtsi",
+      "status": "added",
+      "changed_sha256": "4e1824e632a7d0e3d7a4e1fdc559e9cea3c5e504518738a7c0fbdb740cbc483c",
+      "application": "patches/u-boot/0001-crz-am625-android-boot.patch",
+      "publication": "review-required"
+    },
+    {
+      "path": "u-boot/arch/arm/dts/k3-am625-crz-u-boot.dtsi",
+      "status": "added",
+      "changed_sha256": "9e0467a58f90aedfa905858c34cb699a2531fdcf6465870309965771daabde4d",
+      "application": "patches/u-boot/0001-crz-am625-android-boot.patch",
+      "publication": "review-required"
+    },
+    {
+      "path": "u-boot/arch/arm/dts/k3-am625-r5-crz.dts",
+      "status": "added",
+      "changed_sha256": "f331bda9f1f8feefe441599e054a144f565ec1caa04e8e579cd3e9e0b0849449",
+      "application": "patches/u-boot/0001-crz-am625-android-boot.patch",
+      "publication": "review-required"
+    },
+    {
+      "path": "u-boot/boot/bootmeth_android.c",
+      "status": "modified",
+      "changed_sha256": "b61123b793460c6614cbe2c71335137afd28da92736ac7704e26483b19592d0a",
+      "application": "patches/u-boot/0001-crz-am625-android-boot.patch",
+      "publication": "review-required",
+      "original_source": "u-boot",
+      "original_sha256": "ca2d66dcfdbc1126fce30542ccfb72646cc530ff527fcf8a06cd3de7cec51494",
+      "diff_sha256": "d350546cd5a5cf772a47d5749d70e53ff9988ab26e85664c56570971ee707432"
+    },
+    {
+      "path": "u-boot/boot/image-android.c",
+      "status": "modified",
+      "changed_sha256": "9dd6af2c68957b72ecbf64cd553d57d76bd24110c18a03c3c11e1e2f381843c8",
+      "application": "patches/u-boot/0001-crz-am625-android-boot.patch",
+      "publication": "review-required",
+      "original_source": "u-boot",
+      "original_sha256": "dcdd1f23671d18764378ffca27ee70e233d0395532877de4984fbcf4bbb5227e",
+      "diff_sha256": "a96311d1ff722e3de7cac1e777f0f3699fbddbb14edb80b61b0890e3a0dc2e1f"
+    },
+    {
+      "path": "u-boot/cmd/abootimg.c",
+      "status": "modified",
+      "changed_sha256": "82b50df60234228b26fea69d80e0d615a05845143aea84720df804201b2f1f70",
+      "application": "patches/u-boot/0001-crz-am625-android-boot.patch",
+      "publication": "review-required",
+      "original_source": "u-boot",
+      "original_sha256": "89ce73db230e9e67850e54ddf7bb4de9e7ae21780b9b59bbfaff18c72ab1467a",
+      "diff_sha256": "edd875b0ba829dab66e26be0013edce4f5d53dd53bc88774a1554051d3d152b7"
+    },
+    {
+      "path": "u-boot/configs/am62x_evm_a53_defconfig",
+      "status": "modified",
+      "changed_sha256": "664b42797b84d65924cbdf3f21eea136fd4360633aaa917f1d3e25acfa012b17",
+      "application": "patches/u-boot/0001-crz-am625-android-boot.patch",
+      "publication": "review-required",
+      "original_source": "u-boot",
+      "original_sha256": "48a077d439a2b887705303fc8a52f4fad2cc5b2544f713c3a9c50180c71de503",
+      "diff_sha256": "1997abfa79feff2041abf927c162a400c27243d2e06edb80f9835e1710e4f17d"
+    },
+    {
+      "path": "u-boot/configs/am62x_evm_r5_defconfig",
+      "status": "modified",
+      "changed_sha256": "36274ccddc78ec53d196990c85b107d9d7887ea9369fa520660dabad66b6e308",
+      "application": "patches/u-boot/0001-crz-am625-android-boot.patch",
+      "publication": "review-required",
+      "original_source": "u-boot",
+      "original_sha256": "792f905024405486f1b9e25459eac37e2df5a4551ddf7ed1a9306b87de64f74d",
+      "diff_sha256": "c74e5023a6d938b0aa7d34c82ecf23cfa14729716f1d5bda60ce74c57101fcb2"
+    },
+    {
+      "path": "u-boot/dts/upstream/src/arm64/ti/k3-am625-crz.dts",
+      "status": "added",
+      "changed_sha256": "242fd52ae874b288a399d826ca9f856a32a035827e212e78be769fb96325e085",
+      "application": "patches/u-boot/0001-crz-am625-android-boot.patch",
+      "publication": "review-required"
+    },
+    {
+      "path": "u-boot/include/env/ti/android.env",
+      "status": "modified",
+      "changed_sha256": "c061b513dd61b44a09320f5cc0e26fda1d93e6ad84006597e7a4997590082bfd",
+      "application": "patches/u-boot/0001-crz-am625-android-boot.patch",
+      "publication": "review-required",
+      "original_source": "u-boot",
+      "original_sha256": "2acae5dcb8a32d4c054529ed380e05b10b9ee1d0160c82fda5bc7f99abff028e",
+      "diff_sha256": "8494cb7afc2154a807de8b4e7083125d19e03297ce903ba8334ccb78c25bac8d"
+    },
+    {
+      "path": "u-boot/include/image.h",
+      "status": "modified",
+      "changed_sha256": "cca8b96dd5733ba5f58896c6de79f84aa7f3b3a294dd7809cf82fd5ef05cedad",
+      "application": "patches/u-boot/0001-crz-am625-android-boot.patch",
+      "publication": "review-required",
+      "original_source": "u-boot",
+      "original_sha256": "8ef616c18507bf56fdd36e340cceac8a1be1dca3658e107ebdf80dc99b73adc0",
+      "diff_sha256": "d385bcef42ddc12630ead46206be00c873516446cbf59ca489aae4043cea6622"
+    },
+    {
+      "path": "vendor-boot-header/cmdline.txt",
+      "status": "modified",
+      "changed_sha256": "e14a03ab3f1c0243fd3b00718a2ca251829292919e5b5b8c9884dc9d10220b48",
+      "application": "patches/vendor-boot-header/0001-crz-kernel-cmdline.patch",
+      "publication": "review-required",
+      "original_source": "vendor-boot-header",
+      "original_sha256": "a3b33d4d0b5994777261bf421d4b18494026919714fa9ea616e1b4571988aab9",
+      "diff_sha256": "5163dcf17b11d69a6a26df5b8a422d42fc3c0cc09fe71cf2a4031f12116b77f6"
+    },
+    {
+      "path": "vendor-boot-ramdisk/lib/modules/modules.dep",
+      "status": "modified",
+      "changed_sha256": "6b1dbd1c8ea33d1bb6caba4408d7750a6b2693048c0a108a753fb9cb611ef03d",
+      "application": "patches/vendor-boot-ramdisk/0001-crz-module-lists.patch",
+      "publication": "review-required",
+      "original_source": "vendor-boot-ramdisk",
+      "original_sha256": "b66a5761fa4a7d72ff9493fb9cc913e9393598def96c2108feefd31c221af4fa",
+      "diff_sha256": "cf735f412c6c671fd21ec498b616363a480dee9cc34efcef88b22f6981d7755b"
+    },
+    {
+      "path": "vendor-boot-ramdisk/lib/modules/modules.load",
+      "status": "modified",
+      "changed_sha256": "e8a996b84a78a395d8b63155d2043ecd6d97ee87a3f6ced0ffb81708883a77ff",
+      "application": "patches/vendor-boot-ramdisk/0001-crz-module-lists.patch",
+      "publication": "review-required",
+      "original_source": "vendor-boot-ramdisk",
+      "original_sha256": "6a3070531900abeca29d8b561c9eb9d0c3cd0e0ef4ce50f2d212a12479b3e5ba",
+      "diff_sha256": "9a46ffb7fecdd3ef15e7d3fa396e051c86389c96e4365ca58ad3ed32fc745781"
+    },
+    {
+      "path": "vendor-boot/crz-vendor-boot-dtb0.dts",
+      "status": "modified",
+      "changed_sha256": "505e961dab9808ddb351429e3aca44f8dbd30dde918b9154668b8bd33d8c3807",
+      "application": "patches/vendor-boot/0001-crz-lcd-touch-dtb.patch",
+      "publication": "review-required",
+      "original_source": "vendor-boot",
+      "original_sha256": "7f720eba45fe9b5677f4da31cdd64f24909821dde058e2969892b6fb9273ee45",
+      "diff_sha256": "2025e70e6ae70eb888b4a925898a93ca477b5cbf16fbe73acc411a43dc3cd8c5"
+    },
+    {
+      "path": "vendor/etc/audio_policy_configuration.xml",
+      "status": "modified",
+      "changed_sha256": "5bf945790494c8dbfb4b9634ddfb689cf562babed06013f864868a9b186cc6a7",
+      "application": "patches/vendor/0002-crz-audio-policy.patch",
+      "publication": "review-required",
+      "original_source": "vendor",
+      "original_sha256": "9051c53535e04387bf03726bd79a6946ed987b608c16dfe5afcb48b07c252124",
+      "diff_sha256": "2d0fa9b061a126ce5a5665f8480e5c882020c253a5f99f7c4cb4a65160fd3629"
+    },
+    {
+      "path": "vendor/etc/fstab.am62.mmc",
+      "status": "modified",
+      "changed_sha256": "faba6a6248b0e2b3301542470e82a812dc03531fb86bb36aaf4ae97c35e73531",
+      "application": "patches/vendor/0003-crz-zram512.patch",
+      "publication": "review-required",
+      "original_source": "vendor",
+      "original_sha256": "a0f6a64d7f1c3290c38c8a09f8050395ed57c0d3a671056087b9a84aae4ee4cf",
+      "diff_sha256": "29cac2e7242a75e92c3293fddd45be82e46ab4fa49162a4492e697a18f7aac01"
+    },
+    {
+      "path": "vendor/etc/fstab.am62.mmc.avb",
+      "status": "modified",
+      "changed_sha256": "6ab0d26314230c106b87bb9acf63c301792912e716e830b4e7c041b47cc98a19",
+      "application": "patches/vendor/0003-crz-zram512.patch",
+      "publication": "review-required",
+      "original_source": "vendor",
+      "original_sha256": "142cdae46a2214ff4c8a2a29b1f042b31f2e4b8a91c82f9b2c790ddecaa6a445",
+      "diff_sha256": "e596b6994b97495b936acaccfd5814e38f7bfae60591cae59e4e7116109584fb"
+    },
+    {
+      "path": "vendor/etc/selinux/vendor_sepolicy.cil",
+      "status": "modified",
+      "changed_sha256": "28eb8b33180afc353cf5235b6d73df6832e75fac5f7dbfe0828751f7aa4f9403",
+      "application": "patches/vendor/0001-crz-backlight.patch",
+      "publication": "review-required",
+      "original_source": "vendor",
+      "original_sha256": "8838ab0fff335a34f2674d7ed71350ae2481515d82fb6f70e7ef84a2d8e74cf1",
+      "diff_sha256": "cbf2dab3f3730e88fa0ce092eb66b679b2f394b7c1f0cdd26fc5c9dd0f241882"
+    },
+    {
+      "path": "vendor/etc/ueventd.rc",
+      "status": "modified",
+      "changed_sha256": "657ae7e5315910f803c5ca685755bdb1511f69ebb66daeb1cca7626bfd0bf15c",
+      "application": "patches/vendor/0001-crz-backlight.patch",
+      "publication": "review-required",
+      "original_source": "vendor",
+      "original_sha256": "d522d124626cc89145a269f1367be9517963a816caeb33254696d70b6eec9a31",
+      "diff_sha256": "18f1d74ffdc3fda0cdde89335826aa9c274272a240b0fc96188f66c6946db92c"
+    },
+    {
+      "path": "vendor/etc/usb_audio_policy_configuration.xml",
+      "status": "modified",
+      "changed_sha256": "343292163556d0527fac2e45b388a793d442907d5c4503d0bdd9653f24a03ea6",
+      "application": "patches/vendor/0002-crz-audio-policy.patch",
+      "publication": "review-required",
+      "original_source": "vendor",
+      "original_sha256": "d574a32001a9aab2362b06447fad0ea89903e54ca9318d1943383b7df01ad24c",
+      "diff_sha256": "3b4a7007c070379cbf6cfbf8ad3ea060b2e6fb1d5e7e840b50b4551202648fec"
+    },
+    {
+      "path": "vendor/etc/vintf/manifest/crz-audio-stub.xml",
+      "status": "added",
+      "changed_sha256": "b0db5f62fc84f94ffadbb65df3b2e7ab3332bc73bf5ff5d138b4cfc70ab7b1ad",
+      "application": "overlay/vendor/etc/vintf/manifest/crz-audio-stub.xml",
+      "publication": "review-required"
+    }
+  ]
+}

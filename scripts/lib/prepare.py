@@ -80,7 +80,7 @@ def archive_project(git_root, revision, target):
         require(proc.wait() == 0, f"Git 아카이브를 읽지 못했습니다: {git_root}")
 
 
-def archive_uboot(stage, git_root, archive, revision):
+def archive_uboot(stage, git_root, archive, revision, record=None):
     tree = stage / "u-boot"
     if git_root is not None:
         archive_project(git_root, revision, tree)
@@ -98,10 +98,10 @@ def archive_uboot(stage, git_root, archive, revision):
                         yield member
 
             extract_members(source, tree, members())
-    return patch(tree, ROOT / "patches/u-boot/0001-crz-am625-android-boot.patch")
+    return patch(tree, ROOT / "patches/u-boot/0001-crz-am625-android-boot.patch", record)
 
 
-def prepare_module_sources(stage, git_root, archive, profile):
+def prepare_module_sources(stage, git_root, archive, profile, record=None):
     tree = stage / "module-source"
     paths = (PANEL, PWM)
     if git_root is not None:
@@ -121,12 +121,12 @@ def prepare_module_sources(stage, git_root, archive, profile):
                     "커널 아카이브에 기준 커밋 또는 모듈 소스가 없습니다.")
     expect_hash(tree / PANEL, profile["before_sha256"])
     expect_hash(tree / PWM, profile["pwm_bl_sha256"])
-    outputs = patch(tree, ROOT / "patches/kernel/0001-panel-simple-crz-bsd101wx1-300.patch")
+    outputs = patch(tree, ROOT / "patches/kernel/0001-panel-simple-crz-bsd101wx1-300.patch", record)
     expect_hash(tree / PANEL, profile["after_sha256"])
     return [*outputs, tree / PWM]
 
 
-def prepare_images(stage, images):
+def prepare_images(stage, images, record=None):
     dt_profile = MANIFEST["vendor_boot_dtb"]
     version = run("dtc", "--version", capture=True).decode().strip()
     require(version.split()[-1] == dt_profile["dtc_version"],
@@ -136,21 +136,21 @@ def prepare_images(stage, images):
     require(hashlib.sha256(base.trees[0]).hexdigest() == dt_profile["before_sha256"],
             "순정 첫 DTB의 해시가 다릅니다.")
     write(source_dtb, run("dtc", "-q", "-I", "dtb", "-O", "dts", data=base.trees[0], capture=True))
-    artifacts = patch(source_dtb.parent, ROOT / "patches/vendor-boot/0001-crz-lcd-touch-dtb.patch")
+    artifacts = patch(source_dtb.parent, ROOT / "patches/vendor-boot/0001-crz-lcd-touch-dtb.patch", record)
     patched_dtb = stage / "dtb/crz-vendor-boot-dtb0.dtb"
     write(patched_dtb, run("dtc", "-q", "-I", "dts", "-O", "dtb", source_dtb, capture=True))
     expect_hash(patched_dtb, dt_profile["after_sha256"])
     artifacts.append(patched_dtb)
     boot_header = stage / "vendor-boot-header"
     write(boot_header / "cmdline.txt", (base.cmdline + "\n").encode("ascii"))
-    artifacts.extend(patch(boot_header, ROOT / "patches/vendor-boot-header/0001-crz-kernel-cmdline.patch"))
+    artifacts.extend(patch(boot_header, ROOT / "patches/vendor-boot-header/0001-crz-kernel-cmdline.patch", record))
 
     ramdisk = stage / "vendor-boot-ramdisk"
     for name, _, _, data in base.records():
         if name in MODULE_LISTS:
             write(ramdisk / name, data)
     require(all((ramdisk / name).is_file() for name in MODULE_LISTS), "순정 ramdisk 모듈 목록이 없습니다.")
-    artifacts.extend(patch(ramdisk, ROOT / "patches/vendor-boot-ramdisk/0001-crz-module-lists.patch"))
+    artifacts.extend(patch(ramdisk, ROOT / "patches/vendor-boot-ramdisk/0001-crz-module-lists.patch", record))
 
     original = extract_vendor(images / "super.img")
     original_file = stage / "stock/vendor_a.img"
@@ -174,7 +174,7 @@ def prepare_images(stage, images):
     for name in VENDOR_SETTINGS:
         write(vendor / name, ext4.read(name))
     for name in ("0001-crz-backlight.patch", "0002-crz-audio-policy.patch", "0003-crz-zram512.patch"):
-        artifacts.extend(patch(vendor, ROOT / "patches/vendor" / name))
+        artifacts.extend(patch(vendor, ROOT / "patches/vendor" / name, record))
     try:
         ext4.read(STUB)
     except FileNotFoundError:
@@ -186,7 +186,7 @@ def prepare_images(stage, images):
     return artifacts
 
 
-def prepare(args):
+def prepare(args, record=None):
     android = args.android_root.resolve(strict=True)
     require(android.is_dir(), f"Android 루트가 디렉터리가 아닙니다: {android}")
     images = args.images.resolve(strict=True) if args.images else android
@@ -229,11 +229,11 @@ def prepare(args):
             return
 
     def populate(stage):
-        artifacts = prepare_images(stage, images)
+        artifacts = prepare_images(stage, images, record)
         if has_uboot:
-            artifacts.extend(archive_uboot(stage, uboot, uboot_archive, rev))
+            artifacts.extend(archive_uboot(stage, uboot, uboot_archive, rev, record))
         if has_kernel:
-            artifacts.extend(prepare_module_sources(stage, kernel, kernel_archive, panel))
+            artifacts.extend(prepare_module_sources(stage, kernel, kernel_archive, panel, record))
         write_json(stage / STAMP, {
             "manifest_sha256": sha256(MANIFEST_PATH),
             "kit_sha256": kit_fingerprint(),

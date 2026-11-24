@@ -19,11 +19,16 @@ CRZ용 U-Boot A53/R5 설정과 Android 부팅 처리, LCD·터치 DTB, 백라이
 | 경로 | 내용 |
 | --- | --- |
 | `manifest/` | TI 릴리스, 소스 SHA, 이미지·모듈·정책 해시 |
+| [`original_files/`](original_files/README.md) | 변경 기준이 되는 원본 파일의 출처와 로컬 생성 안내 |
+| [`changed_files/`](changed_files/README.md) | 적용 후 텍스트와 추가 파일의 검토용 구성 |
+| [`diffs/`](diffs/README.md) | 상대 경로가 대응하는 파일별 비교본 |
 | `patches/` | U-Boot, 패널, vendor boot 구성 및 vendor 파일 패치 |
 | `overlay/` | 신규 VINTF 선언과 LCD·터치 설계용 DTS overlay |
 | `apply_change.sh` | 기준 확인, 사전 검사, 작업 사본에 패치 적용 |
 | `scripts/` | 빌드, SD/eMMC 대상 확인과 쓰기, 이미지·UART·ADB 검사 |
 | `docs/` | 환경, 준비, 빌드, 설치·검증 및 [포팅 참고 사항](docs/porting-notes.md) |
+
+[파일별 검토본 생성](docs/review-files.md)에서는 검증된 TI 입력에서 원본 19개, 변경·추가·참고 파일 26개, 파일별 diff 19개를 생성합니다. [검토 파일 인덱스](manifest/review-files.json)에 파일별 SHA-256과 출처가 있습니다.
 
 ## 준비와 적용
 

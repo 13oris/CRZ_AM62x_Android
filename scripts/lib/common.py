@@ -86,17 +86,28 @@ def source_revision(path, revision):
     require(actual == revision, f"Git 기준 SHA 불일치: {path}\n  기준 {revision}\n  HEAD {actual}")
 
 
-def patch(root, path):
+def patch(root, path, record=None):
     print(f"패치 확인: {path.relative_to(ROOT)}", flush=True)
     env = os.environ.copy()
     for key in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE"):
         env.pop(key, None)
     env["GIT_CEILING_DIRECTORIES"] = str(root.parent)
     run("git", "apply", "--check", "--whitespace=nowarn", path, cwd=root, env=env)
+    lines = run("git", "apply", "--numstat", "-z", path, capture=True, cwd=root, env=env).split(b"\0")
+    files = [Path(line.split(b"\t", 2)[2].decode()) for line in lines if line]
+    originals = {}
+    if record is not None:
+        for file in files:
+            require(file.parts and not file.is_absolute() and ".." not in file.parts,
+                    f"검토용 패치 경로가 잘못됐습니다: {file}")
+            src = root / file
+            originals[file] = src.read_bytes() if src.is_file() else None
     run("git", "apply", "--whitespace=nowarn", path, cwd=root, env=env)
     run("git", "apply", "--reverse", "--check", "--whitespace=nowarn", path, cwd=root, env=env)
-    lines = run("git", "apply", "--numstat", "-z", path, capture=True, cwd=root, env=env).split(b"\0")
-    return [root / line.split(b"\t", 2)[2].decode() for line in lines if line]
+    if record is not None:
+        for file in files:
+            record(path, file, originals[file], (root / file).read_bytes())
+    return [root / file for file in files]
 
 
 def ensure_separate(destination, inputs):

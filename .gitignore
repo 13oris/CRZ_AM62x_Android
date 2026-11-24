@@ -7,6 +7,12 @@ __pycache__/
 /sdk/
 /images/
 /backups/
+/original_files/*
+!/original_files/README.md
+/changed_files/*
+!/changed_files/README.md
+/diffs/*
+!/diffs/README.md
 *.tar
 *.tar.gz
 *.tgz
