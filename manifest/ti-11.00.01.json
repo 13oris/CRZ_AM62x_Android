@@ -50,7 +50,17 @@
     "revision": "e9a61e5d367622946887c99803812cd8e07b9c74",
     "path": "drivers/gpu/drm/panel/panel-simple.c",
     "before_sha256": "c4bd5620d0864f962d71eeab3a84a64f659583bd1fa2770e9181c41df96cf714",
-    "after_sha256": "bda74d942897bf9caa2cbb1c1c5da01cb028e1752db4bcb5a1ee39fc1736b877"
+    "after_sha256": "bda74d942897bf9caa2cbb1c1c5da01cb028e1752db4bcb5a1ee39fc1736b877",
+    "pwm_bl_sha256": "c746ff995d0f2e574051413b56e3cd1f1e8b92cbcc3511dbb662193d9d827750"
+  },
+  "source_archives_sha256": {
+    "u-boot": "19934b5241944a7b41f3124da2cba59a3b5d96df64ce64d4cf84c6710cf144d2",
+    "kernel": "26c7eed92ac979404e1678e50189caab94028affd0f91d63a2d92560e8db666f"
+  },
+  "module_build_abi": {
+    "clang_release": "r536225",
+    "config_sha256": "3bca19bec4dc0ff41f56a3f06ba6e9a49ddd4873950c872c05c60a712d4d2f79",
+    "module_symvers_sha256": "75e0f16f94c03080a45572ad64535208dbeb433c8232398434051092be1526a1"
   },
   "vendor_boot_dtb": {
     "entry": 0,
@@ -59,9 +69,24 @@
     "before_sha256": "be24843a07c56ee6491bada63c0c41d9a0ef408c9920543875d45b9554ccb613",
     "after_sha256": "d17db25df4b8fbfba94eeafa3ccc3ceb6caf4bf6096188dcbde92ca14d4b3ff6"
   },
+  "selinux_policy": {
+    "version": 30,
+    "inputs_sha256": {
+      "system/etc/selinux/plat_sepolicy.cil": "c3390caf754eb7924b638c9f1a156336e80391fae12afbccb56ba01faa790883",
+      "system/etc/selinux/mapping/202504.cil": "a98f4b8479aa64e7d2b5a4146e6edc89fc50d62c80d37200258ff719dfced03b",
+      "system/etc/selinux/plat_sepolicy_genfs_202504.cil": "480d503e7730236b659230d16b3946b628394d529dabfef67c679281fd98357b",
+      "system_ext/etc/selinux/system_ext_sepolicy.cil": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "system_ext/etc/selinux/mapping/202504.cil": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "product/etc/selinux/product_sepolicy.cil": "e52b76c6f38a1df91adf959b27e8756500a20a13d457e3aca950c56549e98722",
+      "product/etc/selinux/mapping/202504.cil": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "vendor/etc/selinux/plat_pub_versioned.cil": "44cc55d7c4971675f0d05214205c902857ab275195dc62204a5b118f9ff33ca9"
+    },
+    "after_sha256": "bcdbd259e1de27406fa03e62f4916e589cc0731de9368984ccae7f42fe9896c3"
+  },
   "reference_release": {
     "date": "2026-11-24",
     "running_kernel": "6.12.23-android16-5-gaf4cb0e2168b-4k",
+    "boot0_base_sha256": "e0dd357b9a012001b38b27a78fced534937c549c4f5428572ba594122a21b66a",
     "bootloader_sha256": {
       "boot0.img": "d8cc85948361785a7f9e1a7c5f0e50b61c23538f6f33810dc6353f4a4508f831",
       "tiboot3.bin": "2fbea34ff252a4fb767305220bcd1a5e83f42ecd1ab871b71aa2f541f32939a3",

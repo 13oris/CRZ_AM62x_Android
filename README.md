@@ -10,14 +10,41 @@ CRZ AM625 GP 보드에서 TI Processor SDK Android **11.00.01**의 Android 16 eM
 | 실행 커널 | `6.12.23-android16-5-gaf4cb0e2168b-4k` |
 | U-Boot | 2025.01, TI `ef2eb76b650415637bd93b0eddfb1e31489117f9` 기반 |
 
-## 저장소 사용 순서
+## 변경 사항
 
-1. [기준 입력과 패치 적용 대상](docs/reproduction-inputs.md)에서 TI SDK 자료를 준비하고 [기준 manifest](manifest/ti-11.00.01.json)의 SHA-256과 비교합니다.
-2. `patches/`에서 U-Boot와 패널 소스, 추출한 DTB의 DTS, vendor ramdisk 목록, vendor 파일시스템 설정에 해당하는 패치를 작업 복사본에 적용합니다.
-3. `overlay/`에는 신규 VINTF 선언과 LCD·터치 설계의 DTS overlay 소스가 있습니다. 첫 번째 DTB를 재현할 때는 [실제 배포 DTB 기준 패치](patches/vendor-boot/0001-crz-lcd-touch-dtb.patch)를 사용합니다.
-4. [배포 변경 목록과 검증 범위](docs/change-inventory.md)에서 재현 결과를 확인합니다.
+CRZ용 U-Boot A53/R5 설정과 Android 부팅 처리, LCD·터치 DTB, 백라이트 권한·SELinux, USB 오디오 정책과 512 MiB zram을 반영했습니다. 배포 커널은 TI의 순정 `boot.img`를 사용하며, LCD·터치·zram 모듈은 `vendor_boot` ramdisk에서 로드합니다. [파일별 변경 목록](docs/change-inventory.md)
 
-Phase 2의 검증 범위는 기준 파일에 대한 패치 적용과 첫 번째 DTB 재생성입니다. 전체 적용·빌드·플래싱 스크립트와 빈 eMMC 설치 검증은 후속 단계입니다.
+## 저장소 구조
+
+| 경로 | 내용 |
+| --- | --- |
+| `manifest/` | TI 릴리스, 소스 SHA, 이미지·모듈·정책 해시 |
+| `patches/` | U-Boot, 패널, vendor boot 구성 및 vendor 파일 패치 |
+| `overlay/` | 신규 VINTF 선언과 LCD·터치 설계용 DTS overlay |
+| `apply_change.sh` | 기준 확인, 사전 검사, 작업 사본에 패치 적용 |
+| `scripts/` | 빌드, SD/eMMC 대상 확인과 쓰기, 이미지·UART·ADB 검사 |
+| `docs/` | 환경, 준비, 빌드, 설치·검증 및 [포팅 참고 사항](docs/porting-notes.md) |
+
+## 준비와 적용
+
+[개발 환경](docs/environment.md)과 [재현 입력](docs/reproduction-inputs.md)에 따라 TI `AM62x_userdebug_11.00.01_emmc.tar`를 별도 디렉터리에 풉니다. `TI_IMAGES`는 압축 해제 후 `boot.img`와 `super.img`가 있는 디렉터리입니다.
+
+```sh
+./apply_change.sh --check --images-only "$TI_IMAGES"
+./apply_change.sh --images-only --work-dir "$CRZ_WORK" "$TI_IMAGES"
+```
+
+U-Boot 및 패널 소스까지 적용하려면 `--images-only` 대신 소스 옵션을 지정합니다. 기준 SHA와 출력 경로는 [빌드 안내](docs/build-guide.md)에 있습니다.
+
+## 빌드·설치·검증
+
+1. [빌드 안내](docs/build-guide.md)에 따라 U-Boot와 모듈 또는 Android 이미지 묶음을 준비합니다.
+2. [SD·eMMC 설치 안내](docs/flashing-guide.md)에서 보드와 대상을 먼저 확인합니다. `flash.sh`는 기본값으로 사전 검사만 수행합니다.
+3. UART에서 U-Boot와 Android 초기 로그를 확인하고, 연결된 ADB 장치에서 Android 버전, 부팅 완료, FBE, SELinux 및 zram을 확인합니다. [보드 검증 항목](docs/flashing-guide.md#부팅과-주변장치-검증)
+
+기존 보드 기록에서 SD 없는 eMMC 냉간 부팅, LCD·터치·스크롤, 암호화 유지, SELinux Enforcing, 512 MiB zram 및 오디오 정책 초기화를 확인했습니다. 빈 eMMC 전체 설치, USB 마이크 녹음, deep suspend는 미검증입니다. 재부팅 후 홈 아이콘이 간헐적으로 비는 문제와 터치 IRQ 제약은 [문제 해결](docs/troubleshooting.md)에 정리했습니다.
+
+Ubuntu VM에서 순정 이미지와 기존 검증 모듈을 사용해 슬롯 A 이미지 6개를 재생성했습니다. ext4와 AVB 검증을 통과했으며 `vendor_boot_a`는 기존 배포본과 바이트 단위로 일치했습니다. 이 재생성 묶음의 보드 설치와 부팅은 미검증입니다.
 
 ## 참고 자료
 

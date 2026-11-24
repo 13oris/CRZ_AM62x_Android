@@ -21,6 +21,7 @@
 | `patches/u-boot/0001-crz-am625-android-boot.patch` | TI `u-boot` 프로젝트 루트 |
 | `patches/kernel/0001-panel-simple-crz-bsd101wx1-300.patch` | 패널 소스 기준 `e9a61e5`의 커널 소스 루트 또는 해당 경로를 담은 모듈 빌드 복사본 |
 | `patches/vendor-boot/0001-crz-lcd-touch-dtb.patch` | 순정 DTB 테이블 0번을 DTC 1.7.2로 디컴파일해 `crz-vendor-boot-dtb0.dts`를 만든 디렉터리 |
+| `patches/vendor-boot-header/0001-crz-kernel-cmdline.patch` | 순정 vendor boot 헤더의 커널 cmdline을 추출한 `cmdline.txt`의 디렉터리 |
 | `patches/vendor-boot-ramdisk/0001-crz-module-lists.patch` | 순정 vendor ramdisk에서 추출한 CPIO의 루트 |
 | `patches/vendor/0001-crz-backlight.patch` | 추출한 `vendor_a` 파일시스템의 루트 |
 | `patches/vendor/0002-crz-audio-policy.patch` | 같은 `vendor_a` 루트 |
