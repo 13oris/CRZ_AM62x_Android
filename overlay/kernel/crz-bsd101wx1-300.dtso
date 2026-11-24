@@ -1,0 +1,80 @@
+// SPDX-License-Identifier: GPL-2.0-only OR MIT
+// Derived from project vendor 2023 reference BSD101WX1-300 timings/pins.
+/dts-v1/;
+/plugin/;
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+#include "k3-pinctrl.h"
+
+&{/} {
+    // Shared LCD enable must be asserted before touch-controller identification.
+    crz_lcd_supply: regulator-crz-lcd {
+        compatible = "regulator-fixed";
+        regulator-name = "crz-lcd-enable";
+        pinctrl-names = "default";
+        pinctrl-0 = <&crz_lcd_enable_pins>;
+        gpio = <&main_gpio0 36 GPIO_ACTIVE_HIGH>;
+        enable-active-high;
+        regulator-boot-on;
+        regulator-always-on;
+        startup-delay-us = <300000>;
+    };
+
+    crz_lcd_bl: backlight-crz {
+        compatible = "pwm-backlight";
+        pwms = <&epwm0 0 50000 0>;
+        brightness-levels = <0 32 64 96 128 160 192 224 255>;
+        num-interpolated-steps = <32>;
+        default-brightness-level = <256>;
+    };
+    crz_lcd: display-crz {
+        compatible = "bestar,bsd101wx1-300";
+        backlight = <&crz_lcd_bl>;
+        power-supply = <&crz_lcd_supply>;
+        // Vendor physical dimensions are inconsistent with 10.1 inches; omitted.
+        // Fixed timing and RGB888 bus format supplied by companion driver patch.
+        port {
+            crz_lcd_in: endpoint { remote-endpoint = <&dpi1_out>; };
+        };
+    };
+};
+
+&main_pmx0 {
+    crz_lcd_pwm_pins: crz-lcd-pwm-pins {
+        pinctrl-single,pins = <AM62X_IOPAD(0x01ac, PIN_OUTPUT, 6)>;
+    };
+    crz_lcd_enable_pins: crz-lcd-enable-pins {
+        pinctrl-single,pins = <AM62X_IOPAD(0x0094, PIN_OUTPUT, 7) /* (N20) GPMC0_BE1n.GPIO0_36 */>;
+    };
+    crz_touch_pins: crz-touch-pins {
+        pinctrl-single,pins = <
+            AM62X_IOPAD(0x00a4, PIN_INPUT_PULLUP, 7)
+            AM62X_IOPAD(0x007c, PIN_OUTPUT, 7)
+        >;
+    };
+};
+&epwm0 {
+    pinctrl-names = "default";
+    pinctrl-0 = <&crz_lcd_pwm_pins>;
+    status = "okay";
+};
+&vdd_sd_dv { status = "disabled"; }; // GPIO31 shared with touch reset; SD uses fixed 3.3V.
+&sii9022 { status = "disabled"; };
+&dpi1_out { remote-endpoint = <&crz_lcd_in>; };
+&dss { pixel-format = "RGB24"; };
+&main_i2c1 {
+    #address-cells = <1>;
+    #size-cells = <0>;
+    status = "okay";
+    crz_touch: touchscreen@38 {
+        compatible = "edt,edt-ft5306", "edt,edt-ft5x06";
+        reg = <0x38>;
+        vcc-supply = <&crz_lcd_supply>;
+        pinctrl-names = "default";
+        pinctrl-0 = <&crz_touch_pins>;
+        // TI driver uses its built-in 17ms polling mode when IRQ is absent.
+        reset-gpios = <&main_gpio0 31 GPIO_ACTIVE_LOW>;
+        touchscreen-size-x = <1280>;
+        touchscreen-size-y = <800>;
+    };
+};

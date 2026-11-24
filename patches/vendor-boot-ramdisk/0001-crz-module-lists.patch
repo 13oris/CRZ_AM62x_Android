@@ -1,0 +1,24 @@
+diff --git a/lib/modules/modules.dep b/lib/modules/modules.dep
+--- a/lib/modules/modules.dep
++++ b/lib/modules/modules.dep
+@@ -55,3 +55,8 @@
+ /lib/modules/panel-ilitek-ili9881c.ko:
+ /lib/modules/gpio-davinci.ko:
+ /lib/modules/drm_display_helper.ko:
++/lib/modules/zsmalloc.ko:
++/lib/modules/zram.ko: /lib/modules/zsmalloc.ko
++/lib/modules/pwm_bl.ko:
++/lib/modules/panel-simple.ko:
++/lib/modules/edt-ft5x06.ko:
+diff --git a/lib/modules/modules.load b/lib/modules/modules.load
+--- a/lib/modules/modules.load
++++ b/lib/modules/modules.load
+@@ -55,3 +55,8 @@
+ tps6594-regulator.ko
+ tps6598x.ko
+ pvrsrvkm.ko
++zsmalloc.ko
++zram.ko
++pwm_bl.ko
++panel-simple.ko
++edt-ft5x06.ko

@@ -1,0 +1,22 @@
+diff --git a/etc/selinux/vendor_sepolicy.cil b/etc/selinux/vendor_sepolicy.cil
+--- a/etc/selinux/vendor_sepolicy.cil
++++ b/etc/selinux/vendor_sepolicy.cil
+@@ -1649,3 +1649,7 @@
+ (typeattribute base_typeattr_235_202504)
+ (typeattributeset base_typeattr_235_202504 (and (domain) (not (dumpstate_202504 init_202504 hal_face_default))))
+ 
++
++(genfscon sysfs "/class/backlight" (u object_r sysfs_leds ((s0) (s0))))
++(genfscon sysfs "/devices/platform/backlight-crz/backlight" (u object_r sysfs_leds ((s0) (s0))))
++(genfscon sysfs "/devices/platform/bus@f0000/20010000.i2c/i2c-1/1-0038/wakeup" (u object_r sysfs_wakeup ((s0) (s0))))
+diff --git a/etc/ueventd.rc b/etc/ueventd.rc
+--- a/etc/ueventd.rc
++++ b/etc/ueventd.rc
+@@ -20,4 +20,5 @@
+ /dev/v4l-subdev*          0660   system     camera
+ 
+ # Storage: for factory reset protection feature
+-/dev/block/by-name/frp   0660   system     system
+\ No newline at end of file
++/dev/block/by-name/frp   0660   system     system
++/sys/devices/platform/backlight-crz/backlight/backlight-crz brightness 0664 system system

@@ -1,0 +1,1425 @@
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -1180,6 +1180,7 @@
+ 			      k3-am642-r5-phycore-som-2gb.dtb
+ 
+ dtb-$(CONFIG_SOC_K3_AM625) += k3-am625-r5-sk.dtb \
++			      k3-am625-r5-crz.dtb \
+ 			      k3-am625-r5-beagleplay.dtb \
+ 			      k3-am625-verdin-r5.dtb \
+ 			      k3-am625-r5-phycore-som-2gb.dtb
+diff --git a/arch/arm/dts/k3-am62-crz-common-u-boot.dtsi b/arch/arm/dts/k3-am62-crz-common-u-boot.dtsi
+new file mode 100644
+--- /dev/null
++++ b/arch/arm/dts/k3-am62-crz-common-u-boot.dtsi
+@@ -0,0 +1,38 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Common U-Boot dtsi for AM62x SK and derivatives
++ * Copyright (C) 2025 Texas Instruments Incorporated - https://www.ti.com/
++ */
++
++#include "k3-am625-crz-binman.dtsi"
++
++/ {
++	panel_lvds: panel-lvds {
++		bootph-pre-ram;
++		compatible = "simple-panel";
++		status= "okay";
++		width-mm = <217>;
++		height-mm = <136>;
++		data-mapping = "vesa-24";
++		panel-timing {
++			bootph-pre-ram;
++			clock-frequency = <150274>;
++			hactive = <1920>;
++			vactive = <1200>;
++			hback-porch = <32>;
++			hfront-porch = <52>;
++			vback-porch = <24>;
++			vfront-porch = <8>;
++			hsync-len = <24>;
++			vsync-len = <3>;
++			de-active = <1>;
++		};
++	};
++};
++
++&dss {
++	clocks = <&k3_clks 186 6>,
++		<&k3_clks 186 0>,
++		<&k3_clks 186 2>;
++	ti,am65x-oldi-io-ctrl = <&dss_oldi_io_ctrl>;
++};
+diff --git a/arch/arm/dts/k3-am625-crz-binman.dtsi b/arch/arm/dts/k3-am625-crz-binman.dtsi
+new file mode 100644
+--- /dev/null
++++ b/arch/arm/dts/k3-am625-crz-binman.dtsi
+@@ -0,0 +1,544 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2022-2023 Texas Instruments Incorporated - https://www.ti.com/
++ */
++
++#include "k3-binman.dtsi"
++
++#ifdef CONFIG_TARGET_AM625_R5_EVM
++
++&binman {
++	tiboot3-am62x-hs-evm.bin {
++		filename = "tiboot3-am62x-hs-evm.bin";
++		ti-secure-rom {
++			content = <&u_boot_spl>, <&ti_fs_enc>, <&combined_tifs_cfg>,
++				<&combined_dm_cfg>, <&sysfw_inner_cert>;
++			combined;
++			dm-data;
++			sysfw-inner-cert;
++			keyfile = "custMpk.pem";
++			sw-rev = <1>;
++			content-sbl = <&u_boot_spl>;
++			content-sysfw = <&ti_fs_enc>;
++			content-sysfw-data = <&combined_tifs_cfg>;
++			content-sysfw-inner-cert = <&sysfw_inner_cert>;
++			content-dm-data = <&combined_dm_cfg>;
++			load = <0x43c00000>;
++			load-sysfw = <0x40000>;
++			load-sysfw-data = <0x67000>;
++			load-dm-data = <0x43c3a800>;
++		};
++		u_boot_spl: u-boot-spl {
++			no-expanded;
++		};
++		ti_fs_enc: ti-fs-enc.bin {
++			filename = "ti-sysfw/ti-fs-firmware-am62x-hs-enc.bin";
++			type = "blob-ext";
++			optional;
++		};
++		combined_tifs_cfg: combined-tifs-cfg.bin {
++			filename = "combined-tifs-cfg.bin";
++			type = "blob-ext";
++		};
++		sysfw_inner_cert: sysfw-inner-cert {
++			filename = "ti-sysfw/ti-fs-firmware-am62x-hs-cert.bin";
++			type = "blob-ext";
++			optional;
++		};
++		combined_dm_cfg: combined-dm-cfg.bin {
++			filename = "combined-dm-cfg.bin";
++			type = "blob-ext";
++		};
++	};
++};
++
++&binman {
++	tiboot3-am62x-hs-fs-evm.bin {
++		filename = "tiboot3-am62x-hs-fs-evm.bin";
++		symlink = "tiboot3.bin";
++		ti-secure-rom {
++			content = <&u_boot_spl_fs>, <&ti_fs_enc_fs>, <&combined_tifs_cfg_fs>,
++				<&combined_dm_cfg_fs>, <&sysfw_inner_cert_fs>;
++			combined;
++			dm-data;
++			sysfw-inner-cert;
++			keyfile = "custMpk.pem";
++			sw-rev = <1>;
++			content-sbl = <&u_boot_spl_fs>;
++			content-sysfw = <&ti_fs_enc_fs>;
++			content-sysfw-data = <&combined_tifs_cfg_fs>;
++			content-sysfw-inner-cert = <&sysfw_inner_cert_fs>;
++			content-dm-data = <&combined_dm_cfg_fs>;
++			load = <0x43c00000>;
++			load-sysfw = <0x40000>;
++			load-sysfw-data = <0x67000>;
++			load-dm-data = <0x43c3a800>;
++		};
++		u_boot_spl_fs: u-boot-spl {
++			no-expanded;
++		};
++		ti_fs_enc_fs: ti-fs-enc.bin {
++			filename = "ti-sysfw/ti-fs-firmware-am62x-hs-fs-enc.bin";
++			type = "blob-ext";
++			optional;
++		};
++		combined_tifs_cfg_fs: combined-tifs-cfg.bin {
++			filename = "combined-tifs-cfg.bin";
++			type = "blob-ext";
++		};
++		sysfw_inner_cert_fs: sysfw-inner-cert {
++			filename = "ti-sysfw/ti-fs-firmware-am62x-hs-fs-cert.bin";
++			type = "blob-ext";
++			optional;
++		};
++		combined_dm_cfg_fs: combined-dm-cfg.bin {
++			filename = "combined-dm-cfg.bin";
++			type = "blob-ext";
++		};
++	};
++};
++
++&binman {
++	tiboot3-am62x-gp-evm.bin {
++		filename = "tiboot3-am62x-gp-evm.bin";
++		ti-secure-rom {
++			content = <&u_boot_spl_unsigned>, <&ti_fs_gp>,
++				<&combined_tifs_cfg_gp>, <&combined_dm_cfg_gp>;
++			combined;
++			dm-data;
++			content-sbl = <&u_boot_spl_unsigned>;
++			load = <0x43c00000>;
++			content-sysfw = <&ti_fs_gp>;
++			load-sysfw = <0x40000>;
++			content-sysfw-data = <&combined_tifs_cfg_gp>;
++			load-sysfw-data = <0x67000>;
++			content-dm-data = <&combined_dm_cfg_gp>;
++			load-dm-data = <0x43c3a800>;
++			sw-rev = <1>;
++			keyfile = "ti-degenerate-key.pem";
++		};
++		u_boot_spl_unsigned: u-boot-spl {
++			no-expanded;
++		};
++		ti_fs_gp: ti-fs-gp.bin {
++			filename = "ti-sysfw/ti-fs-firmware-am62x-gp.bin";
++			type = "blob-ext";
++			optional;
++		};
++		combined_tifs_cfg_gp: combined-tifs-cfg-gp.bin {
++			filename = "combined-tifs-cfg.bin";
++			type = "blob-ext";
++		};
++		combined_dm_cfg_gp: combined-dm-cfg-gp.bin {
++			filename = "combined-dm-cfg.bin";
++			type = "blob-ext";
++		};
++
++	};
++};
++
++#include "k3-binman-capsule-r5.dtsi"
++
++// Capsule update GUIDs in string form.  See am62x_evm.h
++#define AM62X_SK_TIBOOT3_IMAGE_GUID_STR "abcb83d2-9cb6-4351-b8f1-6494bbe3700a"
++
++&capsule_tiboot3 {
++	efi-capsule {
++		image-guid = AM62X_SK_TIBOOT3_IMAGE_GUID_STR;
++	};
++};
++
++#endif
++
++#ifdef CONFIG_TARGET_AM625_A53_EVM
++
++#define SPL_AM625_SK_DTB "spl/dts/ti/k3-am625-crz.dtb"
++#define AM625_SK_DTB "u-boot.dtb"
++
++&binman {
++	tifsstub-hs {
++		filename = "tifsstub.bin_hs";
++		ti-secure-rom {
++			content = <&tifsstub_hs_cert>;
++			core = "secure";
++			load = <0x40000>;
++			sw-rev = <CONFIG_K3_X509_SWRV>;
++			keyfile = "custMpk.pem";
++			countersign;
++			tifsstub;
++		};
++		tifsstub_hs_cert: tifsstub-hs-cert.bin {
++			filename = "ti-sysfw/ti-fs-stub-firmware-am62x-hs-cert.bin";
++			type = "blob-ext";
++			optional;
++		};
++		tifsstub_hs_enc: tifsstub-hs-enc.bin {
++			filename = "ti-sysfw/ti-fs-stub-firmware-am62x-hs-enc.bin";
++			type = "blob-ext";
++			optional;
++		};
++	};
++
++	tifsstub-fs {
++		filename = "tifsstub.bin_fs";
++		tifsstub_fs_cert: tifsstub-fs-cert.bin {
++			filename = "ti-sysfw/ti-fs-stub-firmware-am62x-hs-cert.bin";
++			type = "blob-ext";
++			optional;
++		};
++		tifsstub_fs_enc: tifsstub-fs-enc.bin {
++			filename = "ti-sysfw/ti-fs-stub-firmware-am62x-hs-enc.bin";
++			type = "blob-ext";
++			optional;
++		};
++
++	};
++
++	tifsstub-gp {
++		filename = "tifsstub.bin_gp";
++		ti-secure-rom {
++			content = <&tifsstub_gp>;
++			core = "secure";
++			load = <0x60000>;
++			sw-rev = <CONFIG_K3_X509_SWRV>;
++			keyfile = "ti-degenerate-key.pem";
++			tifsstub;
++		};
++		tifsstub_gp: tifsstub-gp.bin {
++			filename = "ti-sysfw/ti-fs-stub-firmware-am62x-gp.bin";
++			type = "blob-ext";
++			optional;
++		};
++	};
++
++	ti-falcon {
++		insert-template = <&ti_falcon_template>;
++
++		fit {
++			images {
++				tifsstub-hs {
++					description = "TIFSSTUB";
++					type = "firmware";
++					arch = "arm32";
++					compression = "none";
++					os = "tifsstub-hs";
++					load = <0x9dc00000>;
++					entry = <0x9dc00000>;
++					blob-ext {
++						filename = "tifsstub.bin_hs";
++					};
++				};
++				tifsstub-fs {
++					description = "TIFSSTUB";
++					type = "firmware";
++					arch = "arm32";
++					compression = "none";
++					os = "tifsstub-fs";
++					load = <0x9dc00000>;
++					entry = <0x9dc00000>;
++					blob-ext {
++						filename = "tifsstub.bin_fs";
++					};
++				};
++				tifsstub-gp {
++					description = "TIFSSTUB";
++					type = "firmware";
++					arch = "arm32";
++					compression = "none";
++					os = "tifsstub-gp";
++					load = <0x9dc00000>;
++					entry = <0x9dc00000>;
++					blob-ext {
++						filename = "tifsstub.bin_gp";
++					};
++				};
++				dm {
++					ti-secure {
++						content = <&dm_falcon>;
++						keyfile = "custMpk.pem";
++					};
++					dm_falcon: ti-dm {
++						filename = "ti-dm/am62xx/ipc_echo_testb_mcu1_0_release_strip.xer5f";
++					};
++				};
++			};
++
++			configurations {
++				default = "conf-0";
++				conf-0 {
++					description = "k3-am625-crz-falcon";
++					firmware = "atf";
++					loadables = "tee", "tifsstub-hs", "tifsstub-fs",
++					"tifsstub-gp", "dm";
++				};
++			};
++		};
++	};
++
++	ti-spl {
++		insert-template = <&ti_spl_template>;
++
++		fit {
++			images {
++
++				tifsstub-hs {
++					description = "TIFSSTUB";
++					type = "firmware";
++					arch = "arm32";
++					compression = "none";
++					os = "tifsstub-hs";
++					load = <0x9dc00000>;
++					entry = <0x9dc00000>;
++					blob-ext {
++						filename = "tifsstub.bin_hs";
++					};
++				};
++
++				tifsstub-fs {
++					description = "TIFSSTUB";
++					type = "firmware";
++					arch = "arm32";
++					compression = "none";
++					os = "tifsstub-fs";
++					load = <0x9dc00000>;
++					entry = <0x9dc00000>;
++					blob-ext {
++						filename = "tifsstub.bin_fs";
++					};
++				};
++
++				tifsstub-gp {
++					description = "TIFSSTUB";
++					type = "firmware";
++					arch = "arm32";
++					compression = "none";
++					os = "tifsstub-gp";
++					load = <0x9dc00000>;
++					entry = <0x9dc00000>;
++					blob-ext {
++						filename = "tifsstub.bin_gp";
++					};
++				};
++
++				dm {
++					ti-secure {
++						content = <&dm>;
++						keyfile = "custMpk.pem";
++					};
++					dm: ti-dm {
++						filename = "ti-dm/am62xx/ipc_echo_testb_mcu1_0_release_strip.xer5f";
++						optional;
++					};
++				};
++
++				fdt-0 {
++					description = "k3-am625-crz";
++					type = "flat_dt";
++					arch = "arm";
++					compression = "none";
++					ti-secure {
++						content = <&spl_am625_sk_dtb>;
++						keyfile = "custMpk.pem";
++					};
++					spl_am625_sk_dtb: blob-ext {
++						filename = SPL_AM625_SK_DTB;
++					};
++
++				};
++
++			};
++
++			configurations {
++				default = "conf-0";
++
++				conf-0 {
++					description = "k3-am625-crz";
++					firmware = "atf";
++					loadables = "tee", "tifsstub-hs", "tifsstub-fs",
++					"tifsstub-gp", "dm", "spl";
++					fdt = "fdt-0";
++				};
++			};
++		};
++	};
++};
++
++&binman {
++	u-boot {
++		insert-template = <&u_boot_template>;
++
++		fit {
++			images {
++				uboot {
++					description = "U-Boot for AM625 Board";
++				};
++
++				fdt-0 {
++					description = "k3-am625-crz";
++					type = "flat_dt";
++					arch = "arm";
++					compression = "none";
++					ti-secure {
++						content = <&am625_sk_dtb>;
++						keyfile = "custMpk.pem";
++					};
++					am625_sk_dtb: blob-ext {
++						filename = AM625_SK_DTB;
++					};
++					hash {
++						algo = "crc32";
++					};
++				};
++			};
++
++			configurations {
++				default = "conf-0";
++
++				conf-0 {
++					description = "k3-am625-crz";
++					firmware = "uboot";
++					loadables = "uboot";
++					fdt = "fdt-0";
++				};
++
++			};
++		};
++	};
++};
++
++&binman {
++	ti-spl_unsigned {
++		insert-template = <&ti_spl_unsigned_template>;
++
++		fit {
++			images {
++
++				tifsstub-hs {
++					description = "tifsstub";
++					type = "firmware";
++					arch = "arm32";
++					compression = "none";
++					os = "tifsstub-hs";
++					load = <0x9dc00000>;
++					entry = <0x9dc00000>;
++					blob-ext {
++						filename = "tifsstub.bin_hs";
++					};
++				};
++
++				tifsstub-fs {
++					description = "tifsstub";
++					type = "firmware";
++					arch = "arm32";
++					compression = "none";
++					os = "tifsstub-fs";
++					load = <0x9dc00000>;
++					entry = <0x9dc00000>;
++					blob-ext {
++						filename = "tifsstub.bin_fs";
++					};
++				};
++
++				tifsstub-gp {
++					description = "tifsstub";
++					type = "firmware";
++					arch = "arm32";
++					compression = "none";
++					os = "tifsstub-gp";
++					load = <0x9dc00000>;
++					entry = <0x9dc00000>;
++					blob-ext {
++						filename = "tifsstub.bin_gp";
++					};
++				};
++
++				dm {
++					ti-dm {
++						filename = "ti-dm/am62xx/ipc_echo_testb_mcu1_0_release_strip.xer5f";
++						optional;
++					};
++				};
++
++				fdt-0 {
++					description = "k3-am625-crz";
++					type = "flat_dt";
++					arch = "arm";
++					compression = "none";
++					spl_am625_sk_dtb_unsigned: blob {
++						filename = SPL_AM625_SK_DTB;
++					};
++				};
++			};
++
++			configurations {
++				default = "conf-0";
++
++				conf-0 {
++					description = "k3-am625-crz";
++					firmware = "atf";
++					loadables = "tee", "tifsstub-hs", "tifsstub-fs",
++						  "tifsstub-gp", "dm", "spl";
++					fdt = "fdt-0";
++				};
++			};
++		};
++	};
++};
++
++&binman {
++	u-boot_unsigned {
++		insert-template = <&u_boot_unsigned_template>;
++
++		fit {
++			images {
++				uboot {
++					description = "U-Boot for AM625 Board";
++				};
++
++				fdt-0 {
++					description = "k3-am625-crz";
++					type = "flat_dt";
++					arch = "arm";
++					compression = "none";
++					am625_sk_dtb_unsigned: blob {
++						filename = AM625_SK_DTB;
++					};
++					hash {
++						algo = "crc32";
++					};
++				};
++			};
++
++			configurations {
++				default = "conf-0";
++
++				conf-0 {
++					description = "k3-am625-crz";
++					firmware = "uboot";
++					loadables = "uboot";
++					fdt = "fdt-0";
++				};
++			};
++		};
++	};
++};
++
++#include "k3-binman-capsule.dtsi"
++
++// Capsule update GUIDs in string form.  See am62x_evm.h
++#define AM62X_SK_SPL_IMAGE_GUID_STR "aee355fc-bf97-4264-8c82-437255efdc1d"
++#define AM62X_SK_UBOOT_IMAGE_GUID_STR "28ab8c6c-fca8-41d3-8ea1-5f171b7d2929"
++
++&capsule_tispl {
++	efi-capsule {
++		image-guid = AM62X_SK_SPL_IMAGE_GUID_STR;
++	};
++};
++
++&capsule_uboot {
++	efi-capsule {
++		image-guid = AM62X_SK_UBOOT_IMAGE_GUID_STR;
++	};
++};
++
++#endif
+diff --git a/arch/arm/dts/k3-am625-crz-u-boot.dtsi b/arch/arm/dts/k3-am625-crz-u-boot.dtsi
+new file mode 100644
+--- /dev/null
++++ b/arch/arm/dts/k3-am625-crz-u-boot.dtsi
+@@ -0,0 +1,47 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Common AM625 SK dts file for SPLs
++ * Copyright (C) 2021-2022 Texas Instruments Incorporated - https://www.ti.com/
++ */
++
++#include "k3-am62-crz-common-u-boot.dtsi"
++
++&main_bcdma {
++	reg = <0x00 0x485c0100 0x00 0x100>,
++	      <0x00 0x4c000000 0x00 0x20000>,
++	      <0x00 0x4a820000 0x00 0x20000>,
++	      <0x00 0x4aa40000 0x00 0x20000>,
++	      <0x00 0x4bc00000 0x00 0x100000>,
++	      <0x00 0x48600000 0x00 0x8000>,
++	      <0x00 0x484a4000 0x00 0x2000>,
++	      <0x00 0x484c2000 0x00 0x2000>;
++	reg-names = "gcfg", "bchanrt", "rchanrt", "tchanrt",
++		    "ringrt" , "cfg", "tchan", "rchan";
++};
++
++&main_pktdma {
++	reg = <0x00 0x485c0000 0x00 0x100>,
++	      <0x00 0x4a800000 0x00 0x20000>,
++	      <0x00 0x4aa00000 0x00 0x20000>,
++	      <0x00 0x4b800000 0x00 0x200000>,
++	      <0x00 0x485e0000 0x00 0x10000>,
++	      <0x00 0x484a0000 0x00 0x2000>,
++	      <0x00 0x484c0000 0x00 0x2000>,
++	      <0x00 0x48430000 0x00 0x1000>;
++	reg-names = "gcfg", "rchanrt", "tchanrt", "ringrt",
++		    "cfg", "tchan", "rchan", "rflow";
++	bootph-all;
++};
++
++&cpsw_port2 {
++	status = "disabled";
++};
++
++&usbss0 {
++	bootph-all;
++};
++
++&usb0 {
++	dr_mode = "peripheral";
++	bootph-all;
++};
+diff --git a/arch/arm/dts/k3-am625-r5-crz.dts b/arch/arm/dts/k3-am625-r5-crz.dts
+new file mode 100644
+--- /dev/null
++++ b/arch/arm/dts/k3-am625-r5-crz.dts
+@@ -0,0 +1,17 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * AM625 SK dts file for R5 SPL
++ * Copyright (C) 2021-2022 Texas Instruments Incorporated - https://www.ti.com/
++ */
++
++#include "k3-am625-crz.dts"
++#include "k3-am62x-sk-ddr4-1600MTs.dtsi"
++#include "k3-am62-ddr.dtsi"
++
++#include "k3-am625-sk-u-boot.dtsi"
++#include "k3-am62-r5-sk-common.dtsi"
++
++&main_pktdma {
++	ti,sci = <&dm_tifs>;
++	bootph-all;
++};
+diff --git a/boot/bootmeth_android.c b/boot/bootmeth_android.c
+--- a/boot/bootmeth_android.c
++++ b/boot/bootmeth_android.c
+@@ -417,7 +417,7 @@
+ {
+ 	struct blk_desc *desc = dev_get_uclass_plat(bflow->blk);
+ 	struct android_priv *priv = bflow->bootmeth_priv;
+-	const char * const requested_partitions[] = {"boot", "vendor_boot", NULL};
++	const char * const requested_partitions[] = {"boot", "vendor_boot", "init_boot", NULL};
+ 	struct AvbOps *avb_ops;
+ 	AvbSlotVerifyResult result;
+ 	AvbSlotVerifyData *out_data;
+@@ -518,35 +518,100 @@
+ 
+ #endif /* AVB_VERIFY */
+ 
++static bool android_arg_exists(const char *cmdline,
++                               const char *key, size_t key_len)
++{
++    const char *p = cmdline;
++
++    while (p && *p) {
++        const char *end;
++
++        while (*p == ' ')
++            p++;
++
++        if (!*p)
++            break;
++
++        end = strchr(p, ' ');
++        if (!end)
++            end = p + strlen(p);
++
++        if ((size_t)(end - p) > key_len &&
++            !strncmp(p, key, key_len) && p[key_len] == '=')
++            return true;
++
++        p = end;
++    }
++
++    return false;
++}
++
+ static int append_bootargs_to_cmdline(struct bootflow *bflow)
+ {
+-	char *bootargs;
+-	int len = 0;
+-
+-	/*
+-	 * Check any additionnal bootargs coming from U-Boot env. If any,
+-	 * merge them with the current cmdline
+-	 */
+-	bootargs = env_get("bootargs");
+-	if (bootargs) {
+-		len += strlen(bootargs) + 1; /* Extra space character needed */
+-		len += strlen(bflow->cmdline);
+-
+-		char *newcmdline = malloc(len + 1); /* +1 for the '\0' */
+-
+-		if (!newcmdline)
+-			return log_msg_ret("newcmdline malloc", -ENOMEM);
+-
+-		strcpy(newcmdline, bootargs);
+-		strcat(newcmdline, " ");
+-		strcat(newcmdline, bflow->cmdline);
+-
+-		/* Free the previous cmdline and replace it */
+-		free(bflow->cmdline);
+-		bflow->cmdline = newcmdline;
+-	}
+-
+-	return 0;
++    const char *bootargs = env_get("bootargs");
++    const char *cmdline = bflow->cmdline;
++    char *newcmdline, *out;
++    const char *p;
++    size_t len;
++
++    if (!bootargs || !*bootargs)
++        return 0;
++
++    len = strlen(bootargs) + (cmdline ? strlen(cmdline) : 0) + 2;
++    newcmdline = malloc(len);
++    if (!newcmdline)
++        return -ENOMEM;
++
++    out = newcmdline;
++    p = bootargs;
++
++    while (*p) {
++        const char *end;
++        const char *eq;
++        size_t token_len;
++        bool skip = false;
++
++        while (*p == ' ')
++            p++;
++
++        if (!*p)
++            break;
++
++        end = strchr(p, ' ');
++        if (!end)
++            end = p + strlen(p);
++
++        token_len = end - p;
++        eq = memchr(p, '=', token_len);
++
++        if (eq && token_len >= 12 &&
++            !strncmp(p, "androidboot.", 12) && cmdline) {
++            skip = android_arg_exists(cmdline, p, eq - p);
++        }
++
++        if (!skip) {
++            if (out != newcmdline)
++                *out++ = ' ';
++            memcpy(out, p, token_len);
++            out += token_len;
++        }
++
++        p = end;
++    }
++
++    if (cmdline && *cmdline) {
++        if (out != newcmdline)
++            *out++ = ' ';
++        memcpy(out, cmdline, strlen(cmdline));
++        out += strlen(cmdline);
++    }
++
++    *out = '\0';
++
++    free(bflow->cmdline);
++    bflow->cmdline = newcmdline;
++
++    return 0;
+ }
+ 
+ static int boot_android_normal(struct bootflow *bflow)
+@@ -556,6 +621,7 @@
+ 	int ret;
+ 	ulong loadaddr = env_get_hex("loadaddr", 0);
+ 	ulong vloadaddr = env_get_hex("vendor_boot_comp_addr_r", 0);
++	ulong iloadaddr = env_get_hex("init_boot_comp_addr_r", 0);
+ 	ulong fdtoverlay_addr_r = env_get_hex("fdtoverlay_addr_r", 0);
+ 
+ 	ret = run_avb_verification(bflow);
+@@ -577,6 +643,21 @@
+ 			return log_msg_ret("read vendor_boot", ret);
+ 		set_avendor_bootimg_addr(vloadaddr);
+ 	}
++	/* Load the generic ramdisk for Android boot header v4. */
++	if (priv->header_version >= 4) {
++		if (!iloadaddr)
++			return log_msg_ret("init_boot addr", -EINVAL);
++
++		ret = read_slotted_partition(desc, "init_boot",
++					     priv->slot, iloadaddr);
++		if (ret < 0)
++			return log_msg_ret("read init_boot", ret);
++
++		set_ainit_bootimg_addr(iloadaddr);
++	} else {
++		set_ainit_bootimg_addr((ulong)-1);
++	}
++
+ 	set_abootimg_addr(loadaddr);
+ 
+ 	ret = read_slotted_partition(desc, "dtbo", priv->slot, fdtoverlay_addr_r);
+diff --git a/boot/image-android.c b/boot/image-android.c
+--- a/boot/image-android.c
++++ b/boot/image-android.c
+@@ -60,32 +60,63 @@
+ /*
+  * Add a string of boot config parameters to memory appended by the trailer.
+  */
+-u32 add_bootconfig_parameters(char *params, ulong params_size,
+-			      ulong bootconfig_start_addr, u32 bootconfig_size)
+-{
+-	if (!params || !bootconfig_start_addr)
+-		return -1;
+-
+-	if (params_size == 0)
+-		return 0;
+-
+-	u32 applied_bytes = 0;
+-	u32 new_size = 0;
+-	ulong end = bootconfig_start_addr + bootconfig_size;
+-
+-	if (is_trailer_present(end)) {
+-		end -= BOOTCONFIG_TRAILER_SIZE;
+-		applied_bytes -= BOOTCONFIG_TRAILER_SIZE;
+-		memcpy(&new_size, (void *)end, BOOTCONFIG_SIZE_SIZE);
+-	} else {
+-		new_size = bootconfig_size;
+-	}
+-	memcpy((void *)end, params, params_size);
+-	applied_bytes += params_size;
+-	applied_bytes += add_trailer(bootconfig_start_addr,
+-				     bootconfig_size + applied_bytes);
+-	return applied_bytes;
+-}
++	u32 add_bootconfig_parameters(char *params, ulong params_size,
++	                              ulong bootconfig_start_addr, u32 bootconfig_size)
++	{
++	    ulong data_size;
++	    ulong new_data_size;
++	    ulong old_total_size;
++	    ulong new_total_size;
++	    ulong trailer_size;
++
++	    if (!params || !bootconfig_start_addr)
++	        return (u32)-1;
++
++	    if (!params_size)
++	        return 0;
++
++	    old_total_size = bootconfig_size;
++	    data_size = bootconfig_size;
++
++	    /*
++	     * If a trailer exists, exclude it from the data size.
++	     * The new parameters must be appended before the trailer.
++	     */
++	    if (bootconfig_size >= BOOTCONFIG_TRAILER_SIZE &&
++	        is_trailer_present(bootconfig_start_addr +
++	                           bootconfig_size)) {
++	        data_size -= BOOTCONFIG_TRAILER_SIZE;
++	    }
++
++	    /*
++	     * Check that the resulting total length fits in u32.
++	     * This function assumes the destination has sufficient RAM.
++	     */
++	    if (params_size > (u32)-1 - data_size -
++	                      BOOTCONFIG_TRAILER_SIZE)
++	        return (u32)-1;
++
++	    /*
++	     * Append the new bootconfig parameter after existing data.
++	     */
++	    memcpy((void *)(bootconfig_start_addr + data_size),
++	           params, params_size);
++
++	    new_data_size = data_size + params_size;
++
++	    /*
++	     * Rebuild the trailer with the correct size and checksum.
++	     */
++	    trailer_size = add_trailer(bootconfig_start_addr,
++	                               new_data_size);
++
++	    if (trailer_size != BOOTCONFIG_TRAILER_SIZE)
++	        return (u32)-1;
++
++	    new_total_size = new_data_size + trailer_size;
++
++	    return (u32)(new_total_size - old_total_size);
++	}
+ 
+ __weak ulong get_avendor_bootimg_addr(void)
+ {
+@@ -434,9 +465,9 @@
+ {
+ 	struct andr_image_data img_data = {0};
+ 	ulong ramdisk_ptr;
+-	size_t ret, len = 0;
++	size_t ret;
+ 	size_t bootconfig_size = 0;
+-	char *bootargs, *androidbootarg, *end;
++	char *bootargs, *androidbootarg;
+ 
+ 	if (!android_image_get_data(hdr, vendor_boot_img, &img_data))
+ 		return -EINVAL;
+@@ -452,14 +483,14 @@
+ 	 */
+ 	if (img_data.header_version > 2) {
+ 		/* Ramdisk can't be used in-place, copy it to ramdisk_addr_r */
+-		if (img_data.ramdisk_addr == ANDROID_IMAGE_DEFAULT_RAMDISK_ADDR) {
+-			ramdisk_ptr = env_get_ulong("ramdisk_addr_r", 16, 0);
+-			if (!ramdisk_ptr) {
+-				printf("Invalid ramdisk_addr_r to copy ramdisk into\n");
+-				return -EINVAL;
+-			}
+-		} else {
+-			ramdisk_ptr = img_data.ramdisk_addr;
++		/*
++		 * CRZ AM62x: always use the board-configured RAM address
++		 * for Android v3/v4 ramdisk placement.
++		 */
++		ramdisk_ptr = env_get_ulong("ramdisk_addr_r", 16, 0);
++		if (!ramdisk_ptr) {
++			printf("Invalid ramdisk_addr_r to copy ramdisk into\n");
++			return -EINVAL;
+ 		}
+ 		*rd_data = ramdisk_ptr;
+ 		memcpy((void *)(ramdisk_ptr), (void *)img_data.vendor_ramdisk_ptr,
+@@ -475,26 +506,61 @@
+ 
+ 			bootargs = env_get("bootargs");
+ 			bootconfig_size = img_data.bootconfig_size;
+-
+-			while (1) {
+-				androidbootarg = strstr(bootargs, "androidboot.");
+-				if (!androidbootarg)
+-					break;
+-				end = strchr(androidbootarg, ' ');
+-				*end = '\0';
+-				len = strlen(androidbootarg);
+-				*end = '\n'; // bootConfig are new-line terminated
+-				ret = add_bootconfig_parameters(androidbootarg, len + 1,
+-								ramdisk_ptr, bootconfig_size);
+-				if (!ret)
+-					return -EINVAL;
+-				bootconfig_size += ret;
+-				img_data.ramdisk_size += ret;
+-				/* Erase the androidboot.* bootarg from bootargs */
+-				*end = ' ';
+-				memmove(androidbootarg, androidbootarg + len,
+-					strlen(androidbootarg + len) + 1);
+-			}
++			
++			printf("CRZ DEBUG: bootargs before conversion: %s\n",
++      		 		bootargs ? bootargs : "(null)");
++
++			printf("CRZ DEBUG: initial bootconfig size: %zu\n",
++      				bootconfig_size);
++
++			printf("CRZ DEBUG: force_normal_boot present: %s\n",
++      				bootargs &&
++       				strstr(bootargs, "androidboot.force_normal_boot=1")
++       				? "YES" : "NO");
++			while (bootargs && *bootargs) {
++			    char *param;
++			    size_t token_len;
++			    size_t skip;
++
++			    androidbootarg = strstr(bootargs, "androidboot.");
++			    if (!androidbootarg)
++			        break;
++
++			    token_len = strcspn(androidbootarg, " \t");
++
++			    param = malloc(token_len + 2);
++			    if (!param)
++			        return -ENOMEM;
++
++			    memcpy(param, androidbootarg, token_len);
++			    param[token_len] = '\n';
++			    param[token_len + 1] = '\0';
++
++			    ret = add_bootconfig_parameters(param, token_len + 1,
++			                                    ramdisk_ptr, bootconfig_size);
++
++			    free(param);
++
++			    if (!ret || ret == (size_t)-1)
++			        return -EINVAL;
++
++			    bootconfig_size += ret;
++			    img_data.ramdisk_size += ret;
++
++			    skip = token_len;
++			    while (androidbootarg[skip] == ' ' ||
++			           androidbootarg[skip] == '\t')
++			        skip++;
++
++			    memmove(androidbootarg, androidbootarg + skip,
++			            strlen(androidbootarg + skip) + 1);
++}
++			
++			printf("CRZ DEBUG: final bootconfig size: %zu\n",
++       				bootconfig_size);
++
++			printf("CRZ DEBUG: remaining bootargs: %s\n",
++       				bootargs ? bootargs : "(null)");
+ 
+ 			/* Save back the new commandline without androidboot. */
+ 			env_set("bootargs", bootargs);
+diff --git a/cmd/abootimg.c b/cmd/abootimg.c
+--- a/cmd/abootimg.c
++++ b/cmd/abootimg.c
+@@ -30,6 +30,11 @@
+ ulong get_ainit_bootimg_addr(void)
+ {
+ 	return _ainit_bootimg_addr;
++}
++
++void set_ainit_bootimg_addr(ulong addr)
++{
++	_ainit_bootimg_addr = addr;
+ }
+ 
+ ulong get_avendor_bootimg_addr(void)
+diff --git a/configs/am62x_evm_a53_defconfig b/configs/am62x_evm_a53_defconfig
+--- a/configs/am62x_evm_a53_defconfig
++++ b/configs/am62x_evm_a53_defconfig
+@@ -13,7 +13,7 @@
+ CONFIG_SF_DEFAULT_SPEED=25000000
+ CONFIG_DM_GPIO=y
+ CONFIG_SPL_DM_SPI=y
+-CONFIG_DEFAULT_DEVICE_TREE="ti/k3-am625-sk"
++CONFIG_DEFAULT_DEVICE_TREE="ti/k3-am625-crz"
+ CONFIG_SPL_TEXT_BASE=0x80080000
+ CONFIG_OF_LIBFDT_OVERLAY=y
+ CONFIG_DM_RESET=y
+diff --git a/configs/am62x_evm_r5_defconfig b/configs/am62x_evm_r5_defconfig
+--- a/configs/am62x_evm_r5_defconfig
++++ b/configs/am62x_evm_r5_defconfig
+@@ -14,7 +14,7 @@
+ CONFIG_ENV_SIZE=0x20000
+ CONFIG_DM_GPIO=y
+ CONFIG_SPL_DM_SPI=y
+-CONFIG_DEFAULT_DEVICE_TREE="k3-am625-r5-sk"
++CONFIG_DEFAULT_DEVICE_TREE="k3-am625-r5-crz"
+ CONFIG_DM_RESET=y
+ CONFIG_SPL_MMC=y
+ CONFIG_SPL_SERIAL=y
+diff --git a/dts/upstream/src/arm64/ti/k3-am625-crz.dts b/dts/upstream/src/arm64/ti/k3-am625-crz.dts
+new file mode 100644
+--- /dev/null
++++ b/dts/upstream/src/arm64/ti/k3-am625-crz.dts
+@@ -0,0 +1,300 @@
++// SPDX-License-Identifier: GPL-2.0-only OR MIT
++/*
++ * AM625 SK: https://www.ti.com/lit/zip/sprr448
++ *
++ * Copyright (C) 2021-2024 Texas Instruments Incorporated - https://www.ti.com/
++ */
++
++/dts-v1/;
++
++#include "k3-am625.dtsi"
++#include "k3-am62x-sk-common.dtsi"
++
++#include "k3-timesync-router.h"
++
++/ {
++	compatible = "crz,am625", "ti,am625";
++	model = "CRZ AM62X Board";
++
++	opp-table {
++		/* Add 1.4GHz OPP for am625-sk board. Requires VDD_CORE to be at 0.85V */
++		opp-1400000000 {
++			opp-hz = /bits/ 64 <1400000000>;
++			opp-supported-hw = <0x01 0x0004>;
++			clock-latency-ns = <6000000>;
++		};
++	};
++
++	memory@80000000 {
++		bootph-pre-ram;
++		device_type = "memory";
++		/* 1G RAM */
++		reg = <0x00000000 0x80000000 0x00000000 0x40000000>;
++
++	};
++
++	vdd_sd_dv: regulator-4 {
++		/* Output of TLV71033 */
++		bootph-all;
++		compatible = "regulator-gpio";
++		regulator-name = "tlv71033";
++		pinctrl-names = "default";
++		pinctrl-0 = <&vdd_sd_dv_pins_default>;
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-boot-on;
++		vin-supply = <&vcc_5v0>;
++		gpios = <&main_gpio0 31 GPIO_ACTIVE_HIGH>;
++		states = <1800000 0x0>,
++			 <3300000 0x1>;
++	};
++
++	vcc_1v8: regulator-5 {
++		/* output of TPS6282518DMQ */
++		compatible = "regulator-fixed";
++		regulator-name = "vcc_1v8";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		vin-supply = <&vcc_3v3_sys>;
++		regulator-always-on;
++		regulator-boot-on;
++	};
++};
++
++&vmain_pd {
++	bootph-all;
++};
++
++&vcc_5v0 {
++	bootph-all;
++};
++
++&vcc_3v3_sys {
++	bootph-all;
++};
++
++&vdd_mmc1 {
++	bootph-all;
++};
++
++&main_pmx0 {
++	main_mmc0_pins_default: main-mmc0-default-pins {
++		bootph-all;
++		pinctrl-single,pins = <
++			AM62X_IOPAD(0x220, PIN_INPUT, 0) /* (Y3) MMC0_CMD */
++			AM62X_IOPAD(0x218, PIN_INPUT, 0) /* (AB1) MMC0_CLK */
++			AM62X_IOPAD(0x214, PIN_INPUT, 0) /* (AA2) MMC0_DAT0 */
++			AM62X_IOPAD(0x210, PIN_INPUT_PULLUP, 0) /* (AA1) MMC0_DAT1 */
++			AM62X_IOPAD(0x20c, PIN_INPUT_PULLUP, 0) /* (AA3) MMC0_DAT2 */
++			AM62X_IOPAD(0x208, PIN_INPUT_PULLUP, 0) /* (Y4) MMC0_DAT3 */
++			AM62X_IOPAD(0x204, PIN_INPUT_PULLUP, 0) /* (AB2) MMC0_DAT4 */
++			AM62X_IOPAD(0x200, PIN_INPUT_PULLUP, 0) /* (AC1) MMC0_DAT5 */
++			AM62X_IOPAD(0x1fc, PIN_INPUT_PULLUP, 0) /* (AD2) MMC0_DAT6 */
++			AM62X_IOPAD(0x1f8, PIN_INPUT_PULLUP, 0) /* (AC2) MMC0_DAT7 */
++		>;
++	};
++
++	main_rgmii2_pins_default: main-rgmii2-default-pins {
++		bootph-all;
++		pinctrl-single,pins = <
++			AM62X_IOPAD(0x184, PIN_INPUT, 0) /* (AE23) RGMII2_RD0 */
++			AM62X_IOPAD(0x188, PIN_INPUT, 0) /* (AB20) RGMII2_RD1 */
++			AM62X_IOPAD(0x18c, PIN_INPUT, 0) /* (AC21) RGMII2_RD2 */
++			AM62X_IOPAD(0x190, PIN_INPUT, 0) /* (AE22) RGMII2_RD3 */
++			AM62X_IOPAD(0x180, PIN_INPUT, 0) /* (AD23) RGMII2_RXC */
++			AM62X_IOPAD(0x17c, PIN_INPUT, 0) /* (AD22) RGMII2_RX_CTL */
++			AM62X_IOPAD(0x16c, PIN_OUTPUT, 0) /* (Y18) RGMII2_TD0 */
++			AM62X_IOPAD(0x170, PIN_OUTPUT, 0) /* (AA18) RGMII2_TD1 */
++			AM62X_IOPAD(0x174, PIN_OUTPUT, 0) /* (AD21) RGMII2_TD2 */
++			AM62X_IOPAD(0x178, PIN_OUTPUT, 0) /* (AC20) RGMII2_TD3 */
++			AM62X_IOPAD(0x168, PIN_OUTPUT, 0) /* (AE21) RGMII2_TXC */
++			AM62X_IOPAD(0x164, PIN_OUTPUT, 0) /* (AA19) RGMII2_TX_CTL */
++		>;
++	};
++
++	vdd_sd_dv_pins_default: vdd-sd-dv-default-pins {
++		bootph-all;
++		pinctrl-single,pins = <
++			AM62X_IOPAD(0x07c, PIN_OUTPUT, 7) /* (P25) GPMC0_CLK.GPIO0_31 */
++		>;
++	};
++
++	main_gpio1_ioexp_intr_pins_default: main-gpio1-ioexp-intr-default-pins {
++		bootph-all;
++		pinctrl-single,pins = <
++			AM62X_IOPAD(0x01d4, PIN_INPUT, 7) /* (B15) UART0_RTSn.GPIO1_23 */
++		>;
++	};
++};
++
++&main_gpio0 {
++	bootph-all;
++};
++
++&main_gpio1 {
++	bootph-all;
++};
++
++&main_i2c1 {
++	bootph-all;
++
++#if 0
++	exp1: gpio@22 {
++		bootph-all;
++		compatible = "ti,tca6424";
++		reg = <0x22>;
++		gpio-controller;
++		#gpio-cells = <2>;
++		gpio-line-names = "GPIO_CPSW2_RST", "GPIO_CPSW1_RST",
++				   "PRU_DETECT", "MMC1_SD_EN",
++				   "VPP_LDO_EN", "EXP_PS_3V3_En",
++				   "EXP_PS_5V0_En", "EXP_HAT_DETECT",
++				   "GPIO_AUD_RSTn", "GPIO_eMMC_RSTn",
++				   "UART1_FET_BUF_EN", "WL_LT_EN",
++				   "GPIO_HDMI_RSTn", "CSI_GPIO1",
++				   "CSI_GPIO2", "PRU_3V3_EN",
++				   "HDMI_INTn", "PD_I2C_IRQ",
++				   "MCASP1_FET_EN", "MCASP1_BUF_BT_EN",
++				   "MCASP1_FET_SEL", "UART1_FET_SEL",
++				   "TSINT#", "IO_EXP_TEST_LED";
++
++		interrupt-parent = <&main_gpio1>;
++		interrupts = <23 IRQ_TYPE_EDGE_FALLING>;
++		interrupt-controller;
++		#interrupt-cells = <2>;
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&main_gpio1_ioexp_intr_pins_default>;
++	};
++#else
++	exp1: gpio@22 {
++		#gpio-cells = <2>;
++	};
++#endif
++};
++
++&sdhci0 {
++	bootph-all;
++	non-removable;
++	pinctrl-names = "default";
++	pinctrl-0 = <&main_mmc0_pins_default>;
++	status = "okay";
++};
++
++&sdhci1 {
++	vmmc-supply = <&vdd_mmc1>;
++	vqmmc-supply = <&vdd_sd_dv>;
++};
++
++&cpsw3g {
++	pinctrl-names = "default";
++	pinctrl-0 = <&main_rgmii1_pins_default>, <&main_rgmii2_pins_default>;
++
++	cpts@3d000 {
++		/* MAP HW3_TS_PUSH to GENF1 */
++		ti,pps = <2 1>;
++	};
++};
++
++&cpsw_port2 {
++	phy-mode = "rgmii-rxid";
++	phy-handle = <&cpsw3g_phy1>;
++};
++
++&cpsw3g_mdio {
++	cpsw3g_phy1: ethernet-phy@1 {
++		reg = <1>;
++		ti,rx-internal-delay = <DP83867_RGMIIDCTL_2_00_NS>;
++		ti,fifo-depth = <DP83867_PHYCR_FIFO_DEPTH_4_B_NIB>;
++		ti,min-output-impedance;
++	};
++};
++
++&fss {
++	bootph-all;
++};
++
++&ospi0 {
++	flash@0 {
++		bootph-all;
++		compatible = "jedec,spi-nor";
++		reg = <0x0>;
++		spi-tx-bus-width = <8>;
++		spi-rx-bus-width = <8>;
++		spi-max-frequency = <25000000>;
++		cdns,tshsl-ns = <60>;
++		cdns,tsd2d-ns = <60>;
++		cdns,tchsh-ns = <60>;
++		cdns,tslch-ns = <60>;
++		cdns,read-delay = <4>;
++		cdns,phy-mode;
++
++		partitions {
++			bootph-all;
++			compatible = "fixed-partitions";
++			#address-cells = <1>;
++			#size-cells = <1>;
++
++			partition@0 {
++				label = "ospi.tiboot3";
++				reg = <0x0 0x80000>;
++			};
++
++			partition@80000 {
++				label = "ospi.tispl";
++				reg = <0x80000 0x200000>;
++			};
++
++			partition@280000 {
++				label = "ospi.u-boot";
++				reg = <0x280000 0x400000>;
++			};
++
++			partition@680000 {
++				label = "ospi.env";
++				reg = <0x680000 0x40000>;
++			};
++
++			partition@6c0000 {
++				label = "ospi.env.backup";
++				reg = <0x6c0000 0x40000>;
++			};
++
++			partition@800000 {
++				label = "ospi.rootfs";
++				reg = <0x800000 0x37c0000>;
++			};
++
++			partition@3fc0000 {
++				bootph-pre-ram;
++				label = "ospi.phypattern";
++				reg = <0x3fc0000 0x40000>;
++			};
++		};
++	};
++};
++
++&tlv320aic3106 {
++	DVDD-supply = <&vcc_1v8>;
++};
++
++&timesync_router {
++	mux-reg-masks-state = <
++		K3_TS_OFFSET(12, 0x0001ffff, 17)
++		>;
++	status = "okay";
++};
++
++/* CRZ diagnostic: skip MMC1 VMMC regulator lookup */
++&sdhci1 {
++    /delete-property/ vmmc-supply;
++};
++
++/* CRZ diagnostic: restore VMMC and test legacy MMC timing */
++&sdhci1 {
++    vmmc-supply = <&vdd_mmc1>;
++    ti,otap-del-sel-legacy = <8>;
++    ti,itap-del-sel-legacy = <10>;
++    ti,itap-del-sel-sd-hs = <1>;
++    ti,driver-strength-ohm = <50>;
++};
+diff --git a/include/env/ti/android.env b/include/env/ti/android.env
+--- a/include/env/ti/android.env
++++ b/include/env/ti/android.env
+@@ -29,6 +29,7 @@
+ boot_targets=mmc0
+ mmcdev=0
+ bootmeths=android
+-vendor_boot_comp_addr_r=0xd0000000
+-init_boot_comp_addr_r=0xd2000000
++vendor_boot_comp_addr_r=0x90000000
++init_boot_comp_addr_r=0x94000000
++fdtoverlay_addr_r=0x8c000000
+ bootcmd=bootflow scan -lb
+diff --git a/include/image.h b/include/image.h
+--- a/include/image.h
++++ b/include/image.h
+@@ -1972,6 +1972,7 @@
+  * Return: Android init boot image address
+  */
+ ulong get_ainit_bootimg_addr(void);
++void set_ainit_bootimg_addr(ulong addr);
+ 
+ /**
+  * get_avendor_bootimg_addr() - Get Android vendor boot image address

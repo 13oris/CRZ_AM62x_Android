@@ -1,0 +1,35 @@
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -4642,7 +4642,32 @@
+ 	.bus_format = MEDIA_BUS_FMT_RGB888_1X24,
+ };
+ 
++/* CRZ vendor reference: BSD101WX1-300, 1280x800 RGB888. */
++static const struct drm_display_mode bestar_bsd101wx1_300_mode = {
++	.clock = 72400,
++	.hdisplay = 1280,
++	.hsync_start = 1280 + 68,
++	.hsync_end = 1280 + 68 + 60,
++	.htotal = 1280 + 68 + 60 + 2,
++	.vdisplay = 800,
++	.vsync_start = 800 + 8,
++	.vsync_end = 800 + 8 + 8,
++	.vtotal = 800 + 8 + 8 + 2,
++};
++
++static const struct panel_desc bestar_bsd101wx1_300 = {
++	.modes = &bestar_bsd101wx1_300_mode,
++	.num_modes = 1,
++	.bpc = 8,
++	.bus_format = MEDIA_BUS_FMT_RGB888_1X24,
++	.connector_type = DRM_MODE_CONNECTOR_DPI,
++};
++
+ static const struct of_device_id platform_of_match[] = {
++	{
++		.compatible = "bestar,bsd101wx1-300",
++		.data = &bestar_bsd101wx1_300,
++	},
+ 	{
+ 		.compatible = "ampire,am-1280800n3tzqw-t00h",
+ 		.data = &ampire_am_1280800n3tzqw_t00h,

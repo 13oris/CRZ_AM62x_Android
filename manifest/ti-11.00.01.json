@@ -1,0 +1,87 @@
+{
+  "format_version": 1,
+  "board": "CRZ AM625 GP",
+  "sdk": "TI Processor SDK Android AM62x 11.00.01",
+  "android": "16",
+  "release_manifest": {
+    "remote": "https://git.ti.com/git/android/manifest.git",
+    "branch": "android16-release",
+    "revision": "dbb247c21d9142002145c2e4a109ab078e2d9590",
+    "android": "releases/RLS_11_00_01.xml",
+    "kernel": "releases/RLS_11_00_01_Kernel.xml",
+    "bootloader": "releases/RLS_11_00_01_Bootloader.xml",
+    "aosp_default_tag": "android-16.0.0_r2"
+  },
+  "project_revisions": {
+    "android": {
+      "device/ti/am62x": "3e9c6ded05b07e6ea91df6963b0cd59f2e5b0584",
+      "device/ti/am62x-kernel": "a8651e78a80f685662c05caf7e58fc2857fe82d7",
+      "vendor/ti/am62x": "98bde66adcfe72d5e1114571fd000c118713bf9e",
+      "hardware/ti/am62x": "4fab6a2a8e0cfa514860bae705afc46af636a5a5"
+    },
+    "kernel": {
+      "common": "af4cb0e2168bc4db58d23c810dc74efea3b21f2a",
+      "private/devices/ti/am6x": "355956db3eade5aab63c4b66302f3a5015527359"
+    },
+    "bootloader": {
+      "build": "10ae644da0dc9ee7762d68b9c1e5bd188a94cb75",
+      "u-boot": "ef2eb76b650415637bd93b0eddfb1e31489117f9",
+      "ti-linux-firmware": "27344bea60be4f0410feb1c309b9de3cdc7f8c6d",
+      "optee-ta/kmgk": "13f5836ae06a1e135ea25dfe407ae493cf5f7726",
+      "optee-os": "86846f4fdf14f25b50fd64a87888ca9fe85a9e2b",
+      "optee-ta/optee_test": "8b70e7287da4f90d9910bfce9a9a9628db3a80ac",
+      "arm-trusted-firmware": "e0c4d3903b382bf34f552af53e6d955fae5283ab"
+    }
+  },
+  "input_archive": {
+    "name": "AM62x_userdebug_11.00.01_emmc.tar",
+    "sha256": "d70abc1e8e66752ce587c48ab059e3653ed4cdf53cd44c235b7c89fb332a53fc"
+  },
+  "stock_images_sha256": {
+    "boot.img": "21975e492cbbca238bdeb584cc8bbfb5a17547a474483829285542ff49e5b2ff",
+    "init_boot.img": "1badb8e97810ed11480a5fe8baa52fde9ab948912f04afc98051839eb9342a00",
+    "dtbo.img": "a9a089f2caf60865057c45da353701f332da11222fd2cc1c78b8a68ebc326fec",
+    "vendor_boot.img": "be0c34b8ac2dbdda02e4c0cea041c1d84dd82a8334e5d5cfc55fb09c60b475e3",
+    "vbmeta.img": "4744f7cee5c28ca3ddefda12538e063b6440f7a0c0c6595c9bb570b2f78473b8",
+    "super.img": "3b84dcb073521d81d9a065e844163c9adab6ddc769683b2f175ec477d8c98e19",
+    "vendor_a": "ef4a87e89c6ff403fa1ade5c8635eaf87a43532b1949fa5cea7f15d770a32d25"
+  },
+  "panel_source": {
+    "revision": "e9a61e5d367622946887c99803812cd8e07b9c74",
+    "path": "drivers/gpu/drm/panel/panel-simple.c",
+    "before_sha256": "c4bd5620d0864f962d71eeab3a84a64f659583bd1fa2770e9181c41df96cf714",
+    "after_sha256": "bda74d942897bf9caa2cbb1c1c5da01cb028e1752db4bcb5a1ee39fc1736b877"
+  },
+  "vendor_boot_dtb": {
+    "entry": 0,
+    "dtc_version": "1.7.2",
+    "patch_input_filename": "crz-vendor-boot-dtb0.dts",
+    "before_sha256": "be24843a07c56ee6491bada63c0c41d9a0ef408c9920543875d45b9554ccb613",
+    "after_sha256": "d17db25df4b8fbfba94eeafa3ccc3ceb6caf4bf6096188dcbde92ca14d4b3ff6"
+  },
+  "reference_release": {
+    "date": "2026-11-24",
+    "running_kernel": "6.12.23-android16-5-gaf4cb0e2168b-4k",
+    "bootloader_sha256": {
+      "boot0.img": "d8cc85948361785a7f9e1a7c5f0e50b61c23538f6f33810dc6353f4a4508f831",
+      "tiboot3.bin": "2fbea34ff252a4fb767305220bcd1a5e83f42ecd1ab871b71aa2f541f32939a3",
+      "tispl.bin": "f07892a0b66526cace8f879a736cf84723b9e76f43dd07495dc8229f90bd562e",
+      "u-boot.img": "bd551456ef1aed22230853cc74cf05cf9a57ee4a440b30bc2815f6e1622f5dd8"
+    },
+    "android_sha256": {
+      "boot_a.img": "21975e492cbbca238bdeb584cc8bbfb5a17547a474483829285542ff49e5b2ff",
+      "init_boot_a.img": "1badb8e97810ed11480a5fe8baa52fde9ab948912f04afc98051839eb9342a00",
+      "dtbo_a.img": "a9a089f2caf60865057c45da353701f332da11222fd2cc1c78b8a68ebc326fec",
+      "vendor_boot_a.img": "78f6e43aefb8c4bcc2397b0428e44901c771ebcb58296a8c000e3779ad877c19",
+      "vendor_a.img": "0cdc48a8c1595af1860605cd65998bd5c044f0d318897bedfe783d67d492dc1d",
+      "vbmeta_a.img": "de0114db2b3772a3b93b6d0a9dfceb0bc8f5a2b86254678365a9ecd396614cd6"
+    },
+    "ramdisk_modules_sha256": {
+      "lib/modules/edt-ft5x06.ko": "55a8a2ef678ad45d300be11f7afdcd46bc5bc6e2ea4ed2c914f6ac32d6a8ec4b",
+      "lib/modules/panel-simple.ko": "e55822fcd57e65873002a02f49cb8c0a9a5db3254268c1254126ead61c448209",
+      "lib/modules/pwm_bl.ko": "0b3bed46d5ae8e37e2480121beb59d9e2bc5288a5c98cdd2d7743a94f579dce5",
+      "lib/modules/zram.ko": "fa9b97bb53dffbb6e0eeac81907a537323c80069c2342d8c217414d5559243e1",
+      "lib/modules/zsmalloc.ko": "d42c9d2105e7b7b53c18df522625a3c6155e5ce39668b72553c7ab6f62446ab9"
+    }
+  }
+}
